@@ -1,0 +1,798 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}CureClick Home{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="icon" href="{% static 'images/logo3.png' %}" type="image/png">
+</head>
+<body>
+    <main class="main-content">
+        <section class="hero-section">
+          <div class="background-container">
+            <div class="background-image"></div>
+            <div class="gradient-overlay-horizontal"></div>
+            <div class="radial-gradient-primary"></div>
+            <div class="radial-gradient-blue"></div>
+            <div class="radial-gradient-white"></div>
+            <div class="right-side-container">
+              <div class="pulse-blob-large"></div>
+              <div class="pulse-blob-medium"></div>
+            </div>
+            <div class="diagonal-pattern"></div>
+          </div>
+          <div class="content-container">
+            <div class="content-left">
+              <div class="trusted-badge">
+                <i class="ri-shield-star-fill badge-icon"></i>
+                <span class="badge-text">Trusted by 100,000+ Patients</span>
+                <div class="ping-dot"></div>
+              </div>
+              <h1 class="hero-title">
+                <div class="blur-circle-top-left"></div>
+                <span class="title-line-1">The Future</span>
+                <div class="title-line-2-container">
+                  <span class="title-line-2">of Health</span>
+                  <div class="heartbeat-icon-container">
+                    <div class="heartbeat-ping"></div>
+                    <div class="heartbeat-icon-bg">
+                      <i class="ri-heart-pulse-fill heartbeat-icon"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="title-line-3-container">
+                  <span class="title-line-3">Scheduling</span>
+                  <div class="blur-circle-bottom-right"></div>
+                </div>
+              </h1>
+              <p class="hero-description">Experience the next generation of healthcare scheduling. Our platform connects you with top medical professionals, making your health journey seamless and efficient.</p>
+              <div class="buttons-container">
+                <button onclick="showBookingModal()" class="book-appointment-button">
+                  <span class="button-content" style="font-weight: bold; margin-left: 20px; font-size: 16px;">
+                    <a href="{% url 'book' %}"></a>Book Appointment
+                    <i class="ri-arrow-right-line arrow-icon"></i>
+                  </span>
+                  <div class="button-shine"></div>
+                </button>
+                <a href="{% url 'pharmacy:medicine_list' %}">
+                <button onclick="showServicesModal()" class="view-services-button" style="font-weight: bold; margin-left: 20px; font-size: 16px;">
+                  Order Medicines
+                  <div class="button-hover-effect"></div>
+                </button>
+              </a>
+              </div>
+              <div class="stats-container">
+                <div class="stat-card">
+                  <div class="stat-bg"></div>
+                  <div class="stat-content">
+                    <div class="stat-value">98%</div>
+                    <div class="stat-label">Patient Satisfaction</div>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-bg"></div>
+                  <div class="stat-content">
+                    <div class="stat-value">24/7</div>
+                    <div class="stat-label">Online Support</div>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-bg"></div>
+                  <div class="stat-content">
+                    <div class="stat-value">500+</div>
+                    <div class="stat-label">Expert Doctors</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="content-right">
+              <div class="top-right-blob"></div>
+              <div class="bottom-left-blob"></div>
+              <div class="image-container">
+                <div class="top-left-blob"></div>
+                <div class="bottom-right-blob"></div>
+                <div class="orbit-circles">
+                  <div class="top-left-orbit"></div>
+                  <div class="bottom-right-orbit"></div>
+                  <div class="facility-image-container" style="margin-top: -30%; margin-left: 5%;">
+                    <img src="{% static 'images/indexDoc.png' %}" alt="Modern medical facility" class="facility-image"
+                    style="width: 700px;">
+                    <div class="image-overlay"></div>                    
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <section class="medicine-booking-carousel">
+        <div class="carousel-background">
+          <div class="diagonal-pattern-light"></div>
+          <div class="gradient-overlay"></div>
+          <div class="glow-effect left"></div>
+          <div class="glow-effect right"></div>
+        </div>
+        
+        <div class="carousel-container">
+          <div class="carousel-header">
+            <div class="feature-badge">
+              <i class="ri-medicine-bottle-line"></i>
+              <span>New Feature</span>
+            </div>
+            <h2 class="carousel-title">Order Your Medicines Online</h2>
+            <p class="carousel-subtitle">Fast delivery, affordable prices, and complete medication management</p>
+          </div>
+          
+          <div class="carousel-slides-container">
+            <div class="carousel-controls">
+              <button class="carousel-control prev">
+                <i class="ri-arrow-left-line"></i>
+              </button>
+              <div class="carousel-indicators">
+                <span class="indicator active"></span>
+                <span class="indicator"></span>
+                <span class="indicator"></span>
+              </div>
+              <button class="carousel-control next">
+                <i class="ri-arrow-right-line"></i>
+              </button>
+            </div>
+            
+            <div class="carousel-slides">
+              <!-- Slide 1 -->
+              <div class="carousel-slide active">
+                <div class="slide-content">
+                  <div class="slide-text">
+                    <h3 class="slide-title">Prescription Refills Made Easy</h3>
+                    <p class="slide-description">Schedule automatic refills and never run out of your essential medications again. Our system sends timely reminders before your prescriptions expire.</p>
+                    <div class="feature-list">
+                      <div class="feature-item">
+                        <i class="ri-check-line feature-check"></i>
+                        <span>Auto-refill scheduling</span>
+                      </div>
+                      <div class="feature-item">
+                        <i class="ri-check-line feature-check"></i>
+                        <span>Prescription reminders</span>
+                      </div>
+                      <div class="feature-item">
+                        <i class="ri-check-line feature-check"></i>
+                        <span>Digital prescription upload</span>
+                      </div>
+                    </div>
+                    <a href="{% url 'pharmacy:medicine_list' %}">
+                    <button class="book-medicines-button">
+                      <span>Start Booking</span>
+                      <i class="ri-arrow-right-line"></i>
+                    </button></a>
+                  </div>
+                  <div class="slide-image-container">
+                    <div class="image-highlight-effect"></div>
+                    <img src="{% static 'images/med1.jpg' %}" alt="Medicine delivery service" class="slide-image">
+                    <div class="stats-badge">
+                      <div class="stats-icon">
+                        <i class="ri-timer-line"></i>
+                      </div>
+                      <div class="stats-text">
+                        <span class="stats-value">24 Hours</span>
+                        <span class="stats-label">Average Delivery Time-Span</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Slide 2 -->
+              <div class="carousel-slide">
+                <div class="slide-content">
+                  <div class="slide-text">
+                    <h3 class="slide-title">Medication Management Tools</h3>
+                    <p class="slide-description">Track your entire family's medications, dosage schedules, and health history in one secure dashboard with our intelligent medication management system.</p>
+                    <div class="feature-list">
+                      <div class="feature-item">
+                        <i class="ri-check-line feature-check"></i>
+                        <span>Family medication profiles</span>
+                      </div>
+                      <div class="feature-item">
+                        <i class="ri-check-line feature-check"></i>
+                        <span>Dosage reminders</span>
+                      </div>
+                      <div class="feature-item">
+                        <i class="ri-check-line feature-check"></i>
+                        <span>Side effect tracking</span>
+                      </div>
+                    </div>
+                    <a href="{% url 'pharmacy:medicine_list' %}">
+                    <button class="book-medicines-button">
+                      <span>Explore Tools</span>
+                      <i class="ri-arrow-right-line"></i>
+                    </button></a>
+                  </div>
+                  <div class="slide-image-container">
+                    <div class="image-highlight-effect"></div>
+                    <img src="{% static 'images/med2.png' %}" alt="Medication management dashboard" class="slide-image">
+                    <div class="stats-badge">
+                      <div class="stats-icon">
+                        <i class="ri-shield-check-line"></i>
+                      </div>
+                      <div class="stats-text">
+                        <span class="stats-value">100%</span>
+                        <span class="stats-label">Secure & Private</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Slide 3 -->
+              <div class="carousel-slide">
+                <div class="slide-content">
+                  <div class="slide-text">
+                    <h3 class="slide-title">Save on Medication Costs</h3>
+                    <p class="slide-description">Our system automatically finds the best prices, applicable discounts, and alternative generic options to help you save on prescription costs.</p>
+                    <div class="feature-list">
+                      <div class="feature-item">
+                        <i class="ri-check-line feature-check"></i>
+                        <span>Price comparison</span>
+                      </div>
+                      <div class="feature-item">
+                        <i class="ri-check-line feature-check"></i>
+                        <span>Discount coupons</span>
+                      </div>
+                      <div class="feature-item">
+                        <i class="ri-check-line feature-check"></i>
+                        <span>Generic alternatives</span>
+                      </div>
+                    </div>
+                    <a href="{% url 'pharmacy:medicine_list' %}">
+                    <button class="book-medicines-button">
+                      <span>Check Prices</span>
+                      <i class="ri-arrow-right-line"></i>
+                    </button></a>
+                  </div>
+                  <div class="slide-image-container">
+                    <div class="image-highlight-effect"></div>
+                    <img src="{% static 'images/med3.jpg' %}" alt="Medicine savings calculator" class="slide-image">
+                    <div class="stats-badge">
+                      <div class="stats-icon">
+                        <i class="ri-money-dollar-circle-line"></i>
+                      </div>
+                      <div class="stats-text">
+                        <span class="stats-value">25%</span>
+                        <span class="stats-label">Average Savings</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="partners-container">
+            <div class="partners-label">Trusted by Leading Pharmacies</div>
+            <div class="partners-logos">
+              <div class="partner-logo">PharmaCare</div>
+              <div class="partner-logo">MediPlus</div>
+              <div class="partner-logo">HealthRx</div>
+              <div class="partner-logo">WellPharm</div>
+              <div class="partner-logo">CareChemist</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+     
+      <section class="section">
+        <div class="max-w-7xl">
+          <div class="grid md-grid-cols-2 items-center">
+            <div class="relative">
+                <div class="absolute blur-effect top-blur"></div>
+                <div class="absolute blur-effect bottom-blur"></div>
+                <div class="card">
+                  <div class="text-center mb-8">
+                    <div class="icon-circle mb-4">
+                      <i class="ri-stethoscope-line text-primary text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold">Doctor Portal</h3>
+                    <p class="text-gray-600 mt-2">Access your professional dashboard</p>
+                  </div>
+                  
+                  <form class="space-y-6" method="post" action="{% url 'index' %}">
+                    {% csrf_token %}
+                    
+                    {% if messages %}
+                    <div class="alert alert-danger">
+                      {% for message in messages %}
+                        <p>{{ message }}</p>
+                      {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="form-group">
+                      <label class="form-label">CureClick Doctor Id</label>
+                      <div class="relative">
+                        <div class="input-icon">
+                          <i class="ri-profile-line text-gray-400"></i>
+                        </div>
+                        <input type="text" name="doctor_id" class="form-input" placeholder="Enter your Doctor Id" required>
+                      </div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label class="form-label">Password</label>
+                      <div class="relative">
+                        <div class="input-icon">
+                          <i class="ri-lock-line text-gray-400"></i>
+                        </div>
+                        <input type="password" name="password" class="form-input" placeholder="Enter your password" required>
+                      </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center">
+                        <input type="checkbox" id="remember" class="checkbox">
+                        <label for="remember" class="ml-2 text-sm text-gray-700">Remember me</label>
+                      </div>
+                      <a href="#" class="text-sm text-primary">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" class="button button-primary">
+                      <i class="ri-login-circle-line"></i>
+                      <span>Login as Doctor</span>
+                    </button>
+                    
+                    <div class="divider">
+                      <div class="divider-line"></div>
+                      <div class="divider-text">
+                        <span>New to platform?</span>
+                      </div>
+                    </div>
+                    
+                    <a href="mailto:cureclick1@gmail.com">
+                    <button type="button" class="button button-outline">
+                      <i class="ri-user-add-line"></i>
+                      <span>Mail Us !</span>
+                    </button></a>
+                  </form>
+                </div>
+              </div>
+            
+            <div>
+              <div class="mb-8">
+                <div class="feature-badge">
+                  <i class="ri-shield-star-line"></i>
+                  <span>Join Our Network</span>
+                </div>
+                <h2 class="text-4xl font-bold mb-4">Empower Your Practice with Digital Healthcare</h2>
+                <p class="text-gray-600 leading-relaxed">Join our network of trusted healthcare providers and transform your practice with our advanced digital platform.</p>
+              </div>
+              
+              <div class="feature-grid">
+                <div class="feature-card">
+                  <div class="icon-circle-sm bg-green-100" style="width: 75px; height: 35px">
+                    <i class="ri-calendar-2-line text-green-600 text-xl"></i>
+                  </div>
+                  <h3 class="text-lg font-semibold mb-2">Smart Scheduling</h3>
+                  <p class="text-gray-600 text-sm">Efficiently manage your appointments and patient flow</p>
+                </div>
+                
+                <div class="feature-card">
+                  <div class="icon-circle-sm bg-blue-100" style="width: 75px; height: 35px">
+                    <i class="ri-file-list-3-line text-blue-600 text-xl"></i>
+                  </div>
+                  <h3 class="text-lg font-semibold mb-2">Digital Records</h3>
+                  <p class="text-gray-600 text-sm">Access and manage patient records securely</p>
+                </div>
+                
+                <div class="feature-card">
+                  <div class="icon-circle-sm bg-purple-100" style="width: 75px; height: 35px">
+                    <i class="ri-message-3-line text-purple-600 text-xl"></i>
+                  </div>
+                  <h3 class="text-lg font-semibold mb-2">Telemedicine</h3>
+                  <p class="text-gray-600 text-sm">Conduct virtual consultations seamlessly</p>
+                </div>
+                
+                <div class="feature-card">
+                  <div class="icon-circle-sm bg-orange-100" style="width: 75px; height: 35px">
+                    <i class="ri-line-chart-line text-orange-600 text-xl"></i>
+                  </div>
+                  <h3 class="text-lg font-semibold mb-2">Analytics</h3>
+                  <p class="text-gray-600 text-sm">Track your practice performance with insights</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+    <section class="section">
+      <div class="health-scheduler-background"></div>
+      <div class="medcare-container">
+        <div class="healthcare-benefits-header">
+            <h2 class="healthcare-benefits-title">Why Choose Us</h2>
+            <p class="healthcare-benefits-subtitle">Experience healthcare scheduling reimagined with our intuitive booking platform.</p>
+        </div>
+        
+        <div class="medservice-features-grid">
+            <div class="healthcare-feature-card">
+                <div class="medcare-icon-wrapper">
+                    <i class="ri-calendar-check-line health-feature-icon"></i>
+                </div>
+                <h3 class="health-feature-heading">Smart Scheduling</h3>
+                <p class="health-feature-text">Appointment booking that learns your preferences and suggests optimal times.</p>
+                <div class="health-feature-cta">
+                    <span class="health-feature-cta-text">Learn more</span>
+                    <i class="ri-arrow-right-line health-feature-cta-arrow"></i>
+                </div>
+            </div>
+            
+            <div class="healthcare-feature-card">
+                <div class="medcare-icon-wrapper">
+                    <i class="ri-user-heart-line health-feature-icon"></i>
+                </div>
+                <h3 class="health-feature-heading">Expert Care</h3>
+                <p class="health-feature-text">Connect with verified healthcare professionals specialized in various fields.</p>
+                <div class="health-feature-cta">
+                    <span class="health-feature-cta-text">Learn more</span>
+                    <i class="ri-arrow-right-line health-feature-cta-arrow"></i>
+                </div>
+            </div>
+            
+            <div class="healthcare-feature-card">
+                <div class="medcare-icon-wrapper">
+                    <i class="ri-shield-check-line health-feature-icon"></i>
+                </div>
+                <h3 class="health-feature-heading">Secure Platform</h3>
+                <p class="health-feature-text">Your health data is protected with enterprise-grade security and encryption.</p>
+                <div class="health-feature-cta">
+                    <span class="health-feature-cta-text">Learn more</span>
+                    <i class="ri-arrow-right-line health-feature-cta-arrow"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+          <div class="testimonials-section">
+              <div class="testimonials-card">
+                  <div class="blur-circle-top"></div>
+                  <div class="blur-circle-bottom"></div>
+                  <div class="testimonials-content-wrapper">
+                      <div class="testimonials-header">
+                          <div class="badge">
+                              <i class="ri-heart-pulse-line"></i>
+                              <span>Patient Success Stories</span>
+                          </div>
+                          <h3 class="testimonials-heading">Trusted by Thousands of Happy Patients</h3>
+                          <p class="subheading">Our commitment to excellence has earned us the trust and satisfaction of patients worldwide.</p>
+                      </div>
+                      <div class="testimonials-content">
+                          <div class="metrics-container">
+                              <div class="metric-card">
+                                  <div class="metric-header">
+                                      <div class="metric-icon">
+                                          <i class="ri-emotion-happy-line"></i>
+                                      </div>
+                                      <div>
+                                          <div class="metric-value">98%</div>
+                                          <div class="metric-label">Patient Satisfaction</div>
+                                      </div>
+                                  </div>
+                                  <div class="metric-footnote">Based on 10,000+ verified patient reviews</div>
+                              </div>
+                              <div class="small-metrics-grid">
+                                  <div class="metric-card">
+                                      <div class="metric-icon">
+                                          <i class="ri-time-line"></i>
+                                      </div>
+                                      <div class="metric-value">5 min</div>
+                                      <div class="metric-label">Average booking time</div>
+                                  </div>
+                                  <div class="metric-card">
+                                      <div class="metric-icon">
+                                          <i class="ri-calendar-check-line"></i>
+                                      </div>
+                                      <div class="metric-value">24/7</div>
+                                      <div class="metric-label">Online support</div>
+                                  </div>
+                              </div>
+                              <div class="doctor-card">
+                                  <div class="doctor-header">
+                                      <img src="{% static 'images/sarah.jpg' %}"
+                                          class="doctor-image" alt="Doctor">
+                                      <div>
+                                          <div class="doctor-name">Dr. Tara Saxena</div>
+                                          <div class="doctor-specialty">Cardiologist</div>
+                                      </div>
+                                  </div>
+                                  <p class="doctor-quote">"Our platform has revolutionized the way we connect with patients, making healthcare more accessible than ever."</p>
+                              </div>
+                          </div>
+                          <div>
+                              <div id="satisfactionChart" class="chart-container"></div>
+                              <div class="stats-bar">
+                                  <div class="stat-item">
+                                      <div class="stat-value">500+</div>
+                                      <div class="stat-label">Expert Doctors</div>
+                                  </div>
+                                  <div class="stats-divider"></div>
+                                  <div class="stat-item">
+                                      <div class="stat-value">50k+</div>
+                                      <div class="stat-label">Monthly Bookings</div>
+                                  </div>
+                                  <div class="stats-divider"></div>
+                                  <div class="stat-item">
+                                      <div class="stat-value">95%</div>
+                                      <div class="stat-label">On-time Rate</div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </section>
+    
+    <section class="healthcare-section">
+      <div class="healthcare-container">
+        <div class="healthcare-header">
+          <h2 class="healthcare-title">Our Services</h2>
+          <p class="healthcare-subtitle">Comprehensive healthcare services tailored to your needs.</p>
+        </div>
+        <div class="healthcare-services-grid">
+          <div class="service-card">
+            <div class="service-image-container">
+              <img src="{% static 'images/book1.jpg' %}"
+                   alt="General Checkup"
+                   class="service-image">
+              <div class="service-overlay">
+                <a href="{% url 'book' %}"><button class="service-button">Book Now</button></a>
+
+              </div>
+            </div>
+            <h3 class="service-name">General Checkup</h3>
+            <p class="service-description">Comprehensive health assessment and preventive care.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-image-container">
+              <img src="{% static 'images/book2.jpg' %}"
+                   alt="Dental Care"
+                   class="service-image">
+              <div class="service-overlay">
+                <a href="{% url 'book' %}"><button class="service-button">Book Now</button></a>
+              </div>
+            </div>
+            <h3 class="service-name">Dental Care</h3>
+            <p class="service-description">Professional dental services for optimal oral health.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-image-container">
+              <img src="{% static 'images/book3.jpg' %}"
+                   alt="Pediatric Care"
+                   class="service-image">
+              <div class="service-overlay">
+                <a href="{% url 'book' %}"><button class="service-button">Book Now</button></a>
+              </div>
+            </div>
+            <h3 class="service-name">Pediatric Care</h3>
+            <p class="service-description">Specialized healthcare for children and adolescents.</p>
+            
+          </div>
+          <div class="service-card">
+            <div class="service-image-container">
+              <img src="{% static 'images/book4.jpg' %}"
+                   alt="Specialist Consultation"
+                   class="service-image">
+              <div class="service-overlay">
+                <a href="{% url 'book' %}"><button class="service-button">Book Now</button></a>
+              </div>
+            </div>
+            <h3 class="service-name">Specialist Consultation</h3>
+            <p class="service-description">Expert consultation for specific health concerns.</p>
+            
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="healthcare-wrapper">
+      <div class="pattern-overlay"></div>
+      <div class="container-health">
+          <div class="header-section">
+              <h2 class="heading-large">How It Works</h2>
+              <p class="description-general">Book your appointment in three simple steps.</p>
+          </div>
+          
+          <div class="steps-container">
+              <div class="step-box">
+                  <div class="step-number">1</div>
+                  <h3 class="step-title">Choose Service</h3>
+                  <p class="step-description">Browse our comprehensive range of healthcare services and select the one you need.</p>
+                  <div class="step-icon">
+                      <i class="ri-search-line"></i>
+                  </div>
+              </div>
+              
+              <div class="step-box">
+                  <div class="step-number">2</div>
+                  <h3 class="step-title">Pick a Time</h3>
+                  <p class="step-description">Select your preferred appointment date and time from available slots.</p>
+                  <div class="step-icon">
+                      <i class="ri-calendar-line"></i>
+                  </div>
+              </div>
+              
+              <div class="step-box">
+                  <div class="step-number">3</div>
+                  <h3 class="step-title">Confirm Booking</h3>
+                  <p class="step-description">Complete your booking by providing basic information and receive instant confirmation.</p>
+                  <div class="step-icon">
+                      <i class="ri-check-line"></i>
+                  </div>
+              </div>
+          </div>
+          
+          <div class="mobile-section">
+              <div class="mobile-container">
+                  <div class="blob-top-right"></div>
+                  <div class="blob-bottom-left"></div>
+                  
+                  <div class="mobile-grid">
+                      <div>
+                          <div class="badge-mobile">
+                              <i class="ri-smartphone-line badge-icon"></i>
+                              <span>Mobile Experience</span>
+                          </div>
+                          
+                          <h3 class="heading-gradient">Healthcare in Your Pocket</h3>
+                          <p class="app-description">Transform your healthcare journey with our intuitive mobile app. Schedule appointments, access medical records, receive smart reminders, and chat with healthcare providers - all at your fingertips.</p>
+                          
+                          <div class="app-buttons">
+                              <button class="store-button">
+                                  <div class="store-icon-wrapper">
+                                      <i class="ri-apple-fill store-icon"></i>
+                                  </div>
+                                  <div class="store-text">
+                                      <div class="store-label">Download on the</div>
+                                      <div class="store-name">App Store</div>
+                                  </div>
+                                  <i class="ri-arrow-right-line arrow-icon"></i>
+                              </button>
+                              
+                              <button class="store-button">
+                                  <div class="store-icon-wrapper">
+                                      <i class="ri-google-play-fill store-icon"></i>
+                                  </div>
+                                  <div class="store-text">
+                                      <div class="store-label">Get it on</div>
+                                      <div class="store-name">Google Play</div>
+                                  </div>
+                                  <i class="ri-arrow-right-line arrow-icon"></i>
+                              </button>
+                          </div>
+                          
+                          <div class="user-section">
+                              <div class="user-avatars">
+                                  <img src="{% static 'images/user1.jpg' %}" class="user-avatar" alt="User">
+                                  <img src="{% static 'images/user2.jpg' %}" class="user-avatar" alt="User">
+                                  <img src="{% static 'images/user3.jpg' %}" class="user-avatar" alt="User">
+                              </div>
+                              <div class="user-stats">
+                                  <div class="stats-number">50,000+ Active Users</div>
+                                  <div>Join our growing community</div>
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <div class="phone-showcase">
+                          <div class="phone-gradient"></div>
+                          <img src="{% static 'images/phone.jpg' %}" alt="Mobile App" class="phone-image floating">
+                          
+                          <div class="notification-heartrate">
+                              <div class="notification-content">
+                                  <div class="notification-icon-wrapper heartrate-icon-wrapper">
+                                      <i class="ri-heart-pulse-line heartrate-icon"></i>
+                                  </div>
+                                  <div>
+                                      <div class="notification-text-title">Heart Rate</div>
+                                      <div class="notification-text-subtitle">Normal Range</div>
+                                  </div>
+                              </div>
+                          </div>
+                          
+                          <div class="notification-appointment">
+                              <div class="notification-content">
+                                  <div class="notification-icon-wrapper appointment-icon-wrapper">
+                                      <i class="ri-calendar-check-line appointment-icon"></i>
+                                  </div>
+                                  <div>
+                                      <div class="notification-text-title">Next Visit</div>
+                                      <div class="notification-text-subtitle">Tomorrow, 10 AM</div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </section>
+    
+    
+    <section class="health_appointment_region">
+      <div class="boundingbox_contentarea">
+          <div class="titlegroup_middlealigned">
+              <h2 class="titlemain_xlargefont">Ready to Get Started?</h2>
+              <p class="explanationtext_subdued">Book your appointment now and take the first step towards better health.</p>
+          </div>
+          <div class="highlightzone_bluebg">
+              <div class="visualbackdrop_faded"></div>
+              <div class="topstack_relativelayer">
+                  <div class="bisectview_flex">
+                      <div>
+                          <h3 class="persuader_whitetext">Book Your Appointment Today</h3>
+                          <p class="valueprops_translucent">Join thousands of satisfied patients who have experienced our seamless booking process and quality healthcare services.</p>
+                          <a href="{% url 'book' %}"><button onclick="showBookingModal()" class="callbtn_inversed">
+                              <span class="btnlayout_row">
+                                  Get Started Now
+                                  <i class="ri-arrow-right-line pointright_animate"></i>
+                              </span>
+                          </button></a>
+                      </div>
+                      <div class="benefitcontainers_vertical">
+                          <div class="benefititem_horizontal">
+                              <div class="symbolholder_round">
+                                  <i class="ri-calendar-check-line symbolitem_blue"></i>
+                              </div>
+                              <div class="labelgroup_light">
+                                  <div class="primarylabel_emphasized">Easy Scheduling</div>
+                                  <div class="sublabel_deemphasized">Book appointments anytime, anywhere</div>
+                              </div>
+                          </div>
+                          <div class="benefititem_horizontal">
+                              <div class="symbolholder_round">
+                                  <i class="ri-shield-check-line symbolitem_blue"></i>
+                              </div>
+                              <div class="labelgroup_light">
+                                  <div class="primarylabel_emphasized">Secure Platform</div>
+                                  <div class="sublabel_deemphasized">Your data is protected</div>
+                              </div>
+                          </div>
+                          <div class="benefititem_horizontal">
+                              <div class="symbolholder_round">
+                                  <i class="ri-customer-service-line symbolitem_blue"></i>
+                              </div>
+                              <div class="labelgroup_light">
+                                  <div class="primarylabel_emphasized">24/7 Support</div>
+                                  <div class="sublabel_deemphasized">We're here to help</div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </section>
+
+    {% endblock %}
+
+
+    {% block scripts %}
+    <script src="{% static 'js/index.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.0/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.3/apexcharts.min.js"></script>
+    {% endblock %}
+
+</body>
+</html>

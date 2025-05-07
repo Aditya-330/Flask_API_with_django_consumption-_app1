@@ -1,0 +1,794 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Shopping Cart | CURECLICK{% endblock %}
+
+{% block content %}
+<style>
+    /* Main Container Styles */
+    .cart-container {
+        background-color: #f9fafb;
+        padding: 2rem;
+        border-radius: 16px;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e40af;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .page-title::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, #3182ce, #2c5282);
+        border-radius: 3px;
+    }
+    
+    /* Card Styles */
+    .card {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .summary-card:hover, .promo-card:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        transform: translateY(-4px);
+    }
+    
+    .cart-header {
+        background: linear-gradient(135deg, #3182ce, #2c5282);
+        color: white;
+        border-radius: 16px 16px 0 0;
+        padding: 1.25rem 1.5rem;
+        font-weight: 600;
+    }
+    
+    .cart-header h5 {
+        font-size: 1.25rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .cart-header h5::before {
+        content: '\f07a'; /* Shopping cart icon */
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        margin-right: 0.75rem;
+        font-size: 1.1rem;
+    }
+    
+    .summary-card .cart-header h5::before {
+        content: '\f0d6'; /* Money bill icon */
+    }
+    
+    .promo-card .cart-header h5::before {
+        content: '\f02b'; /* Tag icon */
+    }
+    
+    /* Table Styles */
+    .table {
+        margin-bottom: 0;
+    }
+    
+    .table thead th {
+        background-color: #f8fafc;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .cart-item {
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .cart-item:hover {
+        background-color: #f1f5f9;
+    }
+    
+    .cart-item td {
+        padding: 1.25rem 1.5rem;
+        vertical-align: middle;
+    }
+    
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+    
+    /* Product Styles */
+    .medicine-thumbnail {
+        width: 70px;
+        height: 70px;
+        object-fit: contain;
+        background-color: white;
+        padding: 8px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .cart-item:hover .medicine-thumbnail {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .placeholder-thumbnail {
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        color: #94a3b8;
+        transition: all 0.3s ease;
+    }
+    
+    .cart-item:hover .placeholder-thumbnail {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-name {
+        font-weight: 600;
+        color: #1e293b;
+        text-decoration: none;
+        transition: color 0.2s;
+        font-size: 1.05rem;
+    }
+    
+    .product-name:hover {
+        color: #3182ce;
+    }
+    
+    .badge-prescription {
+        background-color: #dbeafe;
+        color: #2563eb;
+        border: none;
+        border-radius: 20px;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Quantity Controls */
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        max-width: 180px;
+    }
+    
+    .quantity-input {
+        width: 60px;
+        text-align: center;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.5rem;
+        font-weight: 500;
+        color: #1e293b;
+        margin: 0 0.5rem;
+        transition: all 0.2s;
+    }
+    
+    .quantity-input:focus {
+        border-color: #3182ce;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* Button Styles */
+    .btn {
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-update {
+        background-color: #3182ce;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+    }
+    
+    .btn-update:hover {
+        background-color: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    }
+    
+    .btn-remove {
+        background-color: transparent;
+        color: #ef4444;
+        border: 1px solid #ef4444;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.2s;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-remove:hover {
+        background-color: #fee2e2;
+        color: #b91c1c;
+        transform: translateY(-2px);
+    }
+    
+    .btn-checkout {
+        background: linear-gradient(135deg, #3182ce, #2563eb);
+        color: white;
+        border: none;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        width: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-checkout::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.6s ease;
+    }
+    
+    .btn-checkout:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3);
+    }
+    
+    .btn-checkout:hover::before {
+        left: 100%;
+    }
+    
+    /* Summary Card Styles */
+    .summary-card .card-body, .promo-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .summary-line {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+        color: #64748b;
+    }
+    
+    .summary-line.total {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-top: 0.75rem;
+        margin-bottom: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .total-value {
+        color: #3182ce;
+    }
+    
+    /* Discount Styles */
+    .discount-line {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        color: #047857;
+    }
+    
+    .discount-badge {
+        background-color: #ecfdf5;
+        border-radius: 10px;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+        border-left: 3px solid #10b981;
+        animation: discount-pulse 1s ease-in-out;
+        box-shadow: 0 4px 8px rgba(16, 185, 129, 0.2);
+    }
+    
+    @keyframes discount-pulse {
+        0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
+            opacity: 0.7;
+        }
+        70% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(1);
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.2);
+        }
+    }
+    
+    .discount-badge-content {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .discount-code {
+        font-weight: 700;
+        color: #047857;
+        font-size: 1.1rem;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .discount-code::after {
+        content: '';
+        position: absolute;
+        height: 2px;
+        bottom: -4px;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(90deg, #10b981, transparent);
+        animation: slide-in 0.8s ease-out forwards;
+        transform-origin: left;
+    }
+    
+    @keyframes slide-in {
+        0% {
+            width: 0;
+            opacity: 0;
+        }
+        100% {
+            width: 100%;
+            opacity: 1;
+        }
+    }
+    
+    .discount-description {
+        color: #059669;
+        font-size: 0.875rem;
+        margin: 0;
+        animation: fade-in 0.8s ease-out forwards;
+        animation-delay: 0.3s;
+        opacity: 0;
+    }
+    
+    @keyframes fade-in {
+        0% {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .btn-remove-promo {
+        background-color: transparent;
+        color: #ef4444;
+        border: 1px solid #ef4444;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
+    
+    .btn-remove-promo:hover {
+        background-color: #fee2e2;
+    }
+    
+    /* Promo Form Styles */
+    .promo-form {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    /* Promo Error Message */
+    .promo-error {
+        background-color: #fee2e2;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        border-left: 3px solid #ef4444;
+        animation: shake 0.5s ease-in-out;
+        display: flex;
+        align-items: center;
+        color: #b91c1c;
+    }
+    
+    .promo-error i {
+        margin-right: 0.5rem;
+        font-size: 1rem;
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-5px); }
+        40%, 80% { transform: translateX(5px); }
+    }
+    
+    .promo-input {
+        flex: 1;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+    
+    .promo-input:focus {
+        border-color: #3182ce;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    
+    .btn-apply-promo {
+        background-color: #3182ce;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.25rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-apply-promo:hover {
+        background-color: #2563eb;
+    }
+    
+    .btn-apply-promo::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: -100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: 0.5s;
+    }
+    
+    .btn-apply-promo:hover::after {
+        left: 100%;
+    }
+    
+    /* Success Animation for Total Amount */
+    .promo-applied .total-value {
+        animation: highlight-price 1.5s ease;
+    }
+    
+    @keyframes highlight-price {
+        0% {
+            color: #3182ce;
+        }
+        50% {
+            color: #10b981;
+            transform: scale(1.05);
+        }
+        100% {
+            color: #3182ce;
+            transform: scale(1);
+        }
+    }
+    
+    /* Empty Cart Styles */
+    .empty-cart {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+    
+    .empty-cart-icon {
+        color: #cbd5e0;
+        font-size: 6rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .empty-cart-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-cart-text {
+        color: #64748b;
+        margin-bottom: 2rem;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .btn-shop-now {
+        background-color: #3182ce;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    
+    .btn-shop-now:hover {
+        background-color: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    }
+    
+    /* Update Notice */
+    .update-notice {
+        margin: 1rem 1.5rem;
+        color: #3182ce;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .update-notice i {
+        color: #3182ce;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 991px) {
+        .cart-container {
+            padding: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .cart-container {
+            padding: 1rem;
+        }
+        
+        .table thead {
+            display: none;
+        }
+        
+        .cart-item {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        
+        .cart-item td {
+            display: block;
+            text-align: right;
+            padding: 0.75rem 1rem;
+            position: relative;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .cart-item td:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 600;
+            color: #64748b;
+        }
+        
+        .cart-item td:first-child {
+            text-align: center;
+        }
+        
+        .cart-item td:first-child::before {
+            display: none;
+        }
+        
+        .d-flex.align-items-center {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+</style>
+
+<div class="container cart-container">
+    <h1 class="page-title">Shopping Cart</h1>
+
+    {% if cart and cart_items %}
+    <div class="row g-4">
+        <!-- Cart Items -->
+        <div class="col-lg-8">
+            <div class="card summary-card">
+                <div class="cart-header">
+                    <h5 class="mb-0">Your Cart Items</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart_items %}
+                                <tr class="cart-item">
+                                    <td data-label="Product">
+                                        <div class="d-flex align-items-center">
+                                            {% if item.medicine.image %}
+                                                <img src="{{ item.medicine.image.url }}" alt="{{ item.medicine.name }}" class="medicine-thumbnail me-3">
+                                            {% else %}
+                                                <div class="placeholder-thumbnail me-3">
+                                                    <i class="fas fa-pills fa-lg"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <a href="{% url 'pharmacy:medicine_detail' item.medicine.id %}" class="product-name">
+                                                    {{ item.medicine.name }}
+                                                </a>
+                                                {% if item.medicine.requires_prescription %}
+                                                    <div class="mt-2">
+                                                        <span class="badge badge-prescription">
+                                                            <i class="fas fa-file-prescription"></i>
+                                                            <span>Prescription Required</span>
+                                                        </span>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label="Price">Rs.{{ item.medicine.price }}</td>
+                                    <td data-label="Quantity">
+                                        <form action="{% url 'pharmacy:update_cart_item' item.id %}" method="post" class="quantity-control">
+                                            {% csrf_token %}
+                                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.medicine.stock }}" class="quantity-input">
+                                            <button type="submit" class="btn btn-update">
+                                                <i class="fas fa-sync-alt"></i>
+                                                <span>Update</span>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td data-label="Total" class="fw-semibold">Rs.{{ item.get_cost }}</td>
+                                    <td>
+                                        <a href="{% url 'pharmacy:remove_from_cart' item.id %}" class="btn btn-remove">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="update-notice">
+                            <i class="fas fa-info-circle"></i>
+                            <p style = "margin-top: 15px;">Please update the product quantity after increasing or decreasing it.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Order Summary & Promo -->
+        <div class="col-lg-4">
+            <div class="card summary-card mb-4">
+                <div class="cart-header">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body {% if cart.promo_code %}promo-applied{% endif %}">
+                    <div class="summary-line">
+                        <span>Subtotal</span>
+                        <span>Rs.{{ cart.get_total_price }}</span>
+                    </div>
+                    
+                    {% if cart.promo_code %}
+                    <div class="discount-line">
+                        <span>Discount ({{ cart.promo_code.code }})</span>
+                        <span>-Rs.{{ cart.get_discount_amount }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="summary-line total">
+                        <span>Total Amount</span>
+                        <span class="total-value">Rs.{{ cart.get_final_price }}</span>
+                    </div>
+                    
+                    <a href="{% url 'pharmacy:checkout' %}" class="btn btn-checkout">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Proceed to Checkout</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Promo Code -->
+            <div class="card promo-card">
+                <div class="cart-header">
+                    <h5 class="mb-0">Promo Code</h5>
+                </div>
+                <div class="card-body">
+                    {% if cart.promo_code %}
+                    <div class="discount-badge">
+                        <div class="discount-badge-content">
+                            <span class="discount-code">{{ cart.promo_code.code }}</span>
+                            <p class="discount-description" style="margin-top: 5px;">{{ cart.promo_code.discount_percentage }}% discount applied</p>
+                        </div>
+                        <a href="{% url 'pharmacy:remove_promo' %}" class="btn-remove-promo" style="text-decoration: none;">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </div>
+                    {% else %}
+                    {% if promo_error %}
+                    <div class="promo-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>{{ promo_error }}</span>
+                    </div>
+                    {% endif %}
+                    <form method="post" action="{% url 'pharmacy:cart' %}" class="promo-form">
+                        {% csrf_token %}
+                        <input type="text" name="code" class="promo-input" placeholder="Enter promo code">
+                        <button type="submit" class="btn-apply-promo">Apply</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Empty Cart State -->
+    <div class="card">
+        <div class="empty-cart">
+            <i class="fas fa-shopping-cart empty-cart-icon"></i>
+            <h2 class="empty-cart-title">Your cart is empty</h2>
+            <p class="empty-cart-text">Looks like you haven't added any medicines to your cart yet. Browse our products and find what you need.</p>
+            <a href="{% url 'pharmacy:medicine_list' %}" class="btn btn-shop-now">
+                <i class="fas fa-pills me-2"></i>
+                Shop Now
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,1983 @@
+{% extends 'base.html' %}
+
+{% block title %}Medicines - We Care{% endblock %}
+
+{% block content %}
+<style>
+    /* Modern Color Palette */
+    :root {
+        --primary: #2b6cb0;
+        --primary-light: #ebf8ff;
+        --primary-dark: #2c5282;
+        --accent: #4299e1;
+        --gray-100: #f7fafc;
+        --gray-200: #edf2f7;
+        --gray-300: #e2e8f0;
+        --gray-400: #cbd5e0;
+        --gray-500: #a0aec0;
+        --gray-600: #718096;
+        --gray-700: #4a5568;
+        --gray-800: #2d3748;
+        --success: #48bb78;
+        --warning: #ed8936;
+        --danger: #e53e3e;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+    }
+
+    /* General Styling Enhancements */
+    body {
+        background-color: var(--gray-100);
+    }
+    
+    /* Medicine Card Styling */
+    .medicine-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: var(--radius-md);
+        border: none;
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        height: 100%;
+        background: white;
+        position: relative;
+    }
+    
+    .medicine-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .medicine-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .medicine-card:hover::after {
+        opacity: 1;
+    }
+    
+    .card-header {
+        border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+        background-color: white;
+        border-bottom: 1px solid var(--gray-200);
+        padding: 1rem;
+    }
+    
+    /* Category Sidebar Styling */
+    .category-sidebar {
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        border: none;
+        background: white;
+    }
+    
+    .category-sidebar .card-header {
+        background: linear-gradient(120deg, var(--primary) 0%, var(--accent) 100%);
+        color: white;
+        font-weight: 600;
+        padding: 1.2rem 1.5rem;
+        border-bottom: none;
+    }
+    
+    .category-sidebar .list-group-item {
+        border: none;
+        padding: 0.875rem 1.5rem;
+        color: var(--gray-700);
+        transition: all 0.2s ease;
+        position: relative;
+        font-size: 0.95rem;
+    }
+    
+    .category-sidebar .list-group-item:hover {
+        background-color: var(--primary-light);
+        color: var(--primary);
+        font-weight: 500;
+    }
+    
+    .category-sidebar .list-group-item.active {
+        background-color: var(--primary-light);
+        color: var(--primary);
+        font-weight: 600;
+        border-left: 4px solid var(--primary);
+    }
+    
+    /* Search Box Styling */
+    .search-wrapper {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    
+    .search-box {
+        border-radius: 50px;
+        border: 1px solid var(--gray-300);
+        padding: 0.75rem 1.25rem;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+    
+    .search-box:focus {
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        border-color: var(--accent);
+    }
+    
+    .search-btn {
+        border-radius: 0 50px 50px 0;
+        background: linear-gradient(to right, var(--primary), var(--accent));
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .search-btn:hover {
+        background: linear-gradient(to right, var(--primary-dark), var(--primary));
+        box-shadow: 0 4px 6px rgba(66, 153, 225, 0.2);
+    }
+    
+    /* Badge Styling */
+    .stock-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 30px;
+        display: inline-flex;
+        align-items: center;
+        font-weight: 500;
+        gap: 0.25rem;
+    }
+    
+    .out-of-stock {
+        background-color: #fff5f5;
+        color: var(--danger);
+    }
+    
+    .low-stock {
+        background-color: #fffaf0;
+        color: var(--warning);
+    }
+    
+    .prescription-required {
+        background-color: var(--primary-light);
+        color: var(--primary);
+    }
+    
+    /* Medicine Image Styling */
+    .medicine-img-container {
+        height: 180px;
+        background-color: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .medicine-img {
+        height: 150px;
+        width: auto;
+        max-width: 90%;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+    }
+    
+    .medicine-card:hover .medicine-img {
+        transform: scale(1.05);
+    }
+    
+    .placeholder-icon {
+        color: var(--gray-400);
+    }
+    
+    /* Button Styling */
+    .btn-outline-blue-500 {
+        color: var(--primary);
+        border: 1px solid var(--primary);
+        transition: all 0.2s ease;
+    }
+    
+    .btn-outline-blue-500:hover {
+        background-color: var(--primary);
+        color: white;
+    }
+    
+    .btn-blue-500 {
+        background: linear-gradient(to right, var(--primary), var(--accent));
+        border: none;
+        color: white;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-blue-500:hover {
+        background: linear-gradient(to right, var(--primary-dark), var(--primary));
+        box-shadow: 0 4px 6px rgba(66, 153, 225, 0.2);
+    }
+    
+    .btn-gray-300 {
+        background-color: var(--gray-300);
+        color: var(--gray-600);
+        border: none;
+    }
+    
+    /* Ad Carousel Styling */
+    .ad-carousel {
+        margin-top: 2rem;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+    }
+    
+    .ad-carousel .carousel-inner {
+        border-radius: var(--radius-md);
+    }
+    
+    .ad-slide {
+        padding: 1.5rem;
+        background: linear-gradient(45deg, rgba(235,248,255,1) 0%, rgba(240,249,255,0.9) 100%);
+        height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .ad-slide-alt {
+        background: linear-gradient(45deg, rgba(235,250,245,1) 0%, rgba(240,255,244,0.9) 100%);
+    }
+    
+    .ad-title {
+        font-weight: 600;
+        color: var(--primary-dark);
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .ad-text {
+        color: var(--gray-700);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .carousel-indicators {
+        bottom: -10px;
+    }
+    
+    .carousel-indicators button {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--gray-400);
+        opacity: 0.5;
+    }
+    
+    .carousel-indicators button.active {
+        background-color: var(--primary);
+        opacity: 1;
+    }
+
+    /* Clean card content styling */
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--gray-800);
+        height: 2.5rem;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+    }
+    
+    .card-text {
+        color: var(--gray-600);
+        margin-bottom: 0.75rem;
+        height: 3rem;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+    }
+    
+    .price-tag {
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .price-tag::before {
+        content: "₹";
+        font-size: 0.8rem;
+        margin-right: 0.2rem;
+        opacity: 0.8;
+    }
+    
+    .card-footer {
+        background-color: white;
+        padding: 0.5rem 1.25rem 1.25rem;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .medicine-card {
+            margin-bottom: 1.5rem;
+        }
+    }
+    /* Quick Access Floating Panel */
+.quick-access-panel {
+    position: fixed;
+    right: 20px;
+    bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 999;
+}
+
+.quick-access-panel .quick-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.quick-access-panel .quick-btn:hover {
+    transform: scale(1.1);
+}
+
+.quick-access-panel .quick-btn::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 60px;
+    background: var(--gray-800);
+    color: white;
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.quick-access-panel .quick-btn:hover::before {
+    opacity: 1;
+}
+
+.quick-access-panel .cart-btn {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+}
+
+.quick-access-panel .help-btn {
+    background: linear-gradient(135deg, var(--success), #38a169);
+}
+
+.quick-access-panel .top-btn {
+    background: linear-gradient(135deg, var(--gray-600), var(--gray-500));
+}
+
+/* Category Quick Filters */
+.category-quick-filters {
+    display: flex;
+    gap: 10px;
+    padding: 20px 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    margin-bottom: 30px;
+}
+
+.category-quick-filters::-webkit-scrollbar {
+    height: 4px;
+}
+
+.category-quick-filters::-webkit-scrollbar-thumb {
+    background-color: var(--gray-300);
+    border-radius: 10px;
+}
+
+.quick-filter {
+    min-width: 120px;
+    flex: 0 0 auto;
+    padding: 15px 0;
+    border-radius: var(--radius-md);
+    background: white;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid var(--gray-200);
+}
+
+.quick-filter:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
+}
+
+.quick-filter .filter-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 1.2rem;
+}
+
+.quick-filter .filter-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    text-align: center;
+}
+
+/* Seasonal Health Tips */
+.seasonal-tips {
+    margin: 30px 0;
+    padding: 20px;
+    border-radius: var(--radius-md);
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    position: relative;
+    overflow: hidden;
+}
+
+.seasonal-tips::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 150px;
+    height: 150px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f59e0b' stroke-width='0.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3Cline x1='12' y1='1' x2='12' y2='3'/%3E%3Cline x1='12' y1='21' x2='12' y2='23'/%3E%3Cline x1='4.22' y1='4.22' x2='5.64' y2='5.64'/%3E%3Cline x1='18.36' y1='18.36' x2='19.78' y2='19.78'/%3E%3Cline x1='1' y1='12' x2='3' y2='12'/%3E%3Cline x1='21' y1='12' x2='23' y2='12'/%3E%3Cline x1='4.22' y1='19.78' x2='5.64' y2='18.36'/%3E%3Cline x1='18.36' y1='5.64' x2='19.78' y2='4.22'/%3E%3C/svg%3E") center/cover no-repeat;
+    opacity: 0.1;
+}
+
+.seasonal-tips-title {
+    font-size: 1.1rem;
+    color: #92400e;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.seasonal-tips-carousel {
+    position: relative;
+}
+
+.tips-slide {
+    display: none;
+    padding: 5px 0;
+}
+
+.tips-slide.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.tips-text {
+    font-size: 0.9rem;
+    color: var(--gray-700);
+}
+
+.tips-nav {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.tips-nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gray-300);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tips-nav-dot.active {
+    background: #f59e0b;
+    transform: scale(1.2);
+}
+
+/* Special Offers Fly-in */
+.special-offers-container {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    z-index: 999;
+    max-width: 300px;
+}
+
+.special-offer {
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    margin-bottom: 10px;
+    transform: translateX(-120%);
+    animation: slideIn 0.5s forwards;
+    animation-delay: 3s;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-120%); }
+    to { transform: translateX(0); }
+}
+
+.offer-header {
+    background: linear-gradient(120deg, #805ad5, #6b46c1);
+    color: white;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.offer-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.offer-close {
+    cursor: pointer;
+    font-size: 0.8rem;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.offer-close:hover {
+    opacity: 1;
+}
+
+.offer-body {
+    padding: 15px;
+}
+
+.offer-text {
+    font-size: 0.85rem;
+    color: var(--gray-700);
+    margin-bottom: 10px;
+}
+
+.offer-countdown {
+    font-size: 0.8rem;
+    color: var(--danger);
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.offer-btn {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    background: #805ad5;
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.offer-btn:hover {
+    background: #6b46c1;
+}
+
+/* Recently Viewed Items */
+.recently-viewed {
+    margin: 30px 0;
+    padding: 20px;
+    border-radius: var(--radius-md);
+    background: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.recently-viewed-title {
+    font-size: 1rem;
+    color: var(--gray-800);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.viewed-items {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: thin;
+}
+
+.viewed-items::-webkit-scrollbar {
+    height: 4px;
+}
+
+.viewed-items::-webkit-scrollbar-thumb {
+    background-color: var(--gray-300);
+    border-radius: 10px;
+}
+
+.viewed-item {
+    min-width: 80px;
+    width: 80px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.viewed-item:hover {
+    transform: scale(1.05);
+}
+
+.viewed-item-img {
+    width: 100%;
+    height: 80px;
+    background: var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.viewed-item-name {
+    font-size: 0.7rem;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+/* Testimonials */
+.testimonials {
+    margin: 30px 0;
+    position: relative;
+}
+
+.testimonials-title {
+    font-size: 1rem;
+    color: var(--gray-800);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.testimonial-carousel {
+    position: relative;
+    height: 150px;
+    overflow: hidden;
+}
+
+.testimonial-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 15px 20px;
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.testimonial-slide.active {
+    opacity: 1;
+    z-index: 1;
+}
+
+.testimonial-quote {
+    font-size: 0.9rem;
+    color: var(--gray-700);
+    font-style: italic;
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.testimonial-quote::before {
+    content: '"';
+    position: absolute;
+    left: 0;
+    top: -5px;
+    font-size: 1.5rem;
+    color: var(--primary-light);
+    font-family: serif;
+}
+
+.testimonial-author {
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.testimonial-author-img {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    font-size: 0.7rem;
+}
+
+.testimonial-dots {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.testimonial-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gray-300);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.testimonial-dot.active {
+    background: var(--primary);
+    transform: scale(1.2);
+}
+
+/* Add "Most Popular" tags to some medicine cards */
+.medicine-card:nth-child(1)::before,
+.medicine-card:nth-child(3)::before,
+.medicine-card:nth-child(5)::before {
+    content: "Most Popular";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #ed8936, #dd6b20);
+    color: white;
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Add a subtle pulse effect to out-of-stock badges */
+@keyframes pulseBadge {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.out-of-stock {
+    animation: pulseBadge 2s infinite;
+}
+</style>
+
+<div class="container py-4">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="card category-sidebar sticky-top" style="top: 20px; z-index: 100;">
+                <div class="card-header">
+                    <h5 class="mb-0">Categories</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'pharmacy:medicine_list' %}" class="list-group-item list-group-item-action {% if not current_category %}active{% endif %}">
+                        <i class="fas fa-th-list me-2"></i> All Categories
+                    </a>
+                    {% for category in categories %}
+                    <a href="{% url 'pharmacy:medicine_list' %}?category={{ category.id }}" 
+                       class="list-group-item list-group-item-action {% if current_category == category.id|stringformat:'s' %}active{% endif %}">
+                        <i class="fas fa-pills me-2"></i> {{ category.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Ad Carousel -->
+            <div id="sideAdCarousel" class="carousel slide ad-carousel" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#sideAdCarousel" data-bs-slide-to="0" class="active"></button>
+                    <button type="button" data-bs-target="#sideAdCarousel" data-bs-slide-to="1"></button>
+                    <button type="button" data-bs-target="#sideAdCarousel" data-bs-slide-to="2"></button>
+                </div>
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="ad-slide">
+                            <div class="ad-title"><i class="fas fa-heart me-2"></i>Heart Health Essentials</div>
+                            <div class="ad-text">Discover how omega-3 supplements can reduce your risk of cardiovascular disease by up to 30%.</div>
+                            <a href="#" class="btn btn-sm btn-outline-blue-500">Learn More</a>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="ad-slide ad-slide-alt">
+                            <div class="ad-title"><i class="fas fa-brain me-2"></i>Boost Your Focus</div>
+                            <div class="ad-text">Clinically proven nootropics to enhance memory and concentration for better productivity.</div>
+                            <a href="#" class="btn btn-sm btn-outline-blue-500">Explore</a>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="ad-slide">
+                            <div class="ad-title"><i class="fas fa-shield-virus me-2"></i>Immunity Defense</div>
+                            <div class="ad-text">Our vitamin C and zinc formulation strengthens your immune system by 45%.</div>
+                            <a href="#" class="btn btn-sm btn-outline-blue-500">Shop Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Medicine List -->
+        <div class="col-lg-9">
+            <div class="search-wrapper">
+                <form method="get" action="{% url 'pharmacy:medicine_list' %}">
+                    <div class="input-group">
+                        {% if current_category %}
+                            <input type="hidden" name="category" value="{{ current_category }}">
+                        {% endif %}
+                        <input type="text" name="q" class="form-control search-box" placeholder="Search medicines, symptoms or health conditions..." value="{{ query|default:'' }}">
+                        <button class="btn search-btn" type="submit">
+                            <i class="fas fa-search me-1"></i> Search
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Featured Ad Banner -->
+            <div class="mb-4">
+                <div id="featuredAdCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4 d-none d-md-block">
+                                            <div class="p-4 text-center">
+                                                <i class="fas fa-capsules fa-4x text-primary mb-3"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8 p-4">
+                                            <h4 class="mb-2 text-primary">25% Off - Cheaper than Market Price</h4>
+                                            <p class="mb-3">Boost your immunity with our premium range of medicines.</p>
+                                            <a href="{% url 'pharmacy:medicine_list' %}" class="btn btn-sm btn-blue-500">Shop Now</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if medicines %}
+            <div class="row">
+                {% for medicine in medicines %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 medicine-card">
+                        <div class="medicine-img-container">
+                            {% if medicine.image %}
+                                <img src="{{ medicine.image.url }}" class="medicine-img" alt="{{ medicine.name }}">
+                            {% else %}
+                                <div class="text-center">
+                                    <i class="fas fa-pills fa-4x placeholder-icon"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ medicine.name }}</h5>
+                            <p class="card-text">{{ medicine.description|truncatechars:70 }}</p>
+                            <div class="price-tag">{{ medicine.price }}</div>
+                            
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                {% if medicine.stock <= 0 %}
+                                    <span class="stock-badge out-of-stock">
+                                        <i class="fas fa-times-circle"></i> Out of Stock
+                                    </span>
+                                {% elif medicine.stock < 5 %}
+                                    <span class="stock-badge low-stock">
+                                        <i class="fas fa-exclamation-circle"></i> Low Stock ({{ medicine.stock }})
+                                    </span>
+                                {% endif %}
+                                {% if medicine.requires_prescription %}
+                                    <span class="stock-badge prescription-required">
+                                        <i class="fas fa-file-prescription"></i> Prescription Required
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'pharmacy:medicine_detail' medicine.id %}" class="btn btn-outline-blue-500 btn-sm">
+                                    <i class="fas fa-info-circle me-1"></i> Details
+                                </a>
+                                {% if medicine.stock > 0 %}
+                                    <a href="{% url 'pharmacy:add_to_cart' medicine.id %}" class="btn btn-blue-500 btn-sm">
+                                        <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-gray-300 btn-sm" disabled>
+                                        <i class="fas fa-ban me-1"></i> Unavailable
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Bottom Ad Carousel -->
+            <div class="mt-4">
+                <div id="bottomAdCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#bottomAdCarousel" data-bs-slide-to="0" class="active"></button>
+                        <button type="button" data-bs-target="#bottomAdCarousel" data-bs-slide-to="1"></button>
+                    </div>
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8 p-4">
+                                            <h4 class="mb-2 text-primary">Joint Pain Relief</h4>
+                                            <p class="mb-3">Our glucosamine and chondroitin supplements help rebuild cartilage and reduce inflammation.</p>
+                                            <a href="#" class="btn btn-sm btn-blue-500">Find Relief</a>
+                                        </div>
+                                        <div class="col-md-4 d-none d-md-block">
+                                            <div class="p-4 text-center">
+                                                <i class="fas fa-bone fa-4x text-primary mb-3"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8 p-4">
+                                            <h4 class="mb-2 text-primary">Sleep Better Tonight</h4>
+                                            <p class="mb-3">Natural melatonin and valerian root supplements for deeper, more restful sleep.</p>
+                                            <a href="#" class="btn btn-sm btn-blue-500">Discover</a>
+                                        </div>
+                                        <div class="col-md-4 d-none d-md-block">
+                                            <div class="p-4 text-center">
+                                                <i class="fas fa-moon fa-4x text-primary mb-3"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-info d-flex align-items-center shadow-sm">
+                <i class="fas fa-info-circle me-3 fa-2x"></i> 
+                <div>
+                    {% if query %}
+                        <h5 class="mb-1">No results found</h5>
+                        <p class="mb-0">We couldn't find any medicines matching "{{ query }}". Please try a different search term.</p>
+                    {% else %}
+                        <h5 class="mb-1">No medicines available</h5>
+                        <p class="mb-0">There are currently no medicines available in this category. Please check back later or browse other categories.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Recommendation Ad when no results -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="text-primary mb-3">You might be interested in</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="text-center p-3">
+                                <i class="fas fa-heart fa-3x text-danger mb-3"></i>
+                                <h6>Heart Health</h6>
+                                <a href="#" class="btn btn-sm btn-outline-blue-500 mt-2">Explore</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="text-center p-3">
+                                <i class="fas fa-brain fa-3x text-warning mb-3"></i>
+                                <h6>Mental Wellness</h6>
+                                <a href="#" class="btn btn-sm btn-outline-blue-500 mt-2">Explore</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3">
+                                <i class="fas fa-shield-virus fa-3x text-success mb-3"></i>
+                                <h6>Immunity Boosters</h6>
+                                <a href="#" class="btn btn-sm btn-outline-blue-500 mt-2">Explore</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Inject Quick Access Panel
+    const quickAccessPanel = document.createElement('div');
+    quickAccessPanel.className = 'quick-access-panel';
+    quickAccessPanel.innerHTML = `
+        <div class="quick-btn cart-btn" data-tooltip="View Cart">
+           <a href="/pharmacycart/" style = "text-decoration: none; color: white;">
+                <i class="fas fa-shopping-cart"></i>
+            </a>
+        </div>
+        <div class="quick-btn top-btn" data-tooltip="Back to Top">
+            <i class="fas fa-arrow-up"></i>
+        </div>
+    `;
+    document.body.appendChild(quickAccessPanel);
+    
+    // Scroll to top functionality
+    document.querySelector('.top-btn').addEventListener('click', function() {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+    
+    // Inject Category Quick Filters
+    // const filterCategories = [
+    //     {icon: 'pills', name: 'Antibiotics'},
+    //     {icon: 'heart', name: 'Cardiac Care'},
+    //     {icon: 'head-side-cough', name: 'Cold & Flu'},
+    //     {icon: 'brain', name: 'Neuro Health'},
+    //     {icon: 'bone', name: 'Bone & Joint'},
+    //     {icon: 'eye', name: 'Eye Care'},
+    //     {icon: 'notes-medical', name: 'Diabetes'},
+    //     {icon: 'lungs', name: 'Respiratory'}
+    // ];
+    
+    // const quickFilters = document.createElement('div');
+    // quickFilters.className = 'category-quick-filters';
+    
+    // filterCategories.forEach(category => {
+    //     quickFilters.innerHTML += `
+    //         <div class="quick-filter">
+    //             <div class="filter-icon">
+    //                 <i class="fas fa-${category.icon}"></i>
+    //             </div>
+    //             <div class="filter-name">${category.name}</div>
+    //         </div>
+    //     `;
+    // });
+    
+    // const containerDiv = document.querySelector('.container');
+    // containerDiv.insertBefore(quickFilters, containerDiv.firstChild);
+    
+    // Inject Seasonal Health Tips
+    const seasonalTips = document.createElement('div');
+    seasonalTips.className = 'seasonal-tips';
+    seasonalTips.innerHTML = `
+        <div class="seasonal-tips-title">
+            <i class="fas fa-sun"></i> Spring Health Tips
+        </div>
+        <div class="seasonal-tips-carousel">
+            <div class="tips-slide active">
+                <div class="tips-text">Seasonal allergies affect up to 30% of adults. Consider antihistamines before symptoms start for better effectiveness.</div>
+            </div>
+            <div class="tips-slide">
+                <div class="tips-text">UV radiation increases by 4% for every 1000 feet in elevation. Remember to apply SPF 30+ sunscreen every 2 hours when outdoors.</div>
+            </div>
+            <div class="tips-slide">
+                <div class="tips-text">Spring cleaning? Don't forget your medicine cabinet! Safely dispose of expired medications at your local pharmacy.</div>
+            </div>
+            <div class="tips-nav">
+                <div class="tips-nav-dot active" data-slide="0"></div>
+                <div class="tips-nav-dot" data-slide="1"></div>
+                <div class="tips-nav-dot" data-slide="2"></div>
+            </div>
+        </div>
+    `;
+    
+    const medicineListCol = document.querySelector('.col-lg-9');
+    medicineListCol.insertBefore(seasonalTips, medicineListCol.children[2]);
+    
+    // Tips carousel functionality
+    const tipsDots = document.querySelectorAll('.tips-nav-dot');
+    tipsDots.forEach(dot => {
+        dot.addEventListener('click', function() {
+            const slideIndex = this.getAttribute('data-slide');
+            document.querySelectorAll('.tips-slide').forEach(slide => slide.classList.remove('active'));
+            document.querySelectorAll('.tips-nav-dot').forEach(dot => dot.classList.remove('active'));
+            document.querySelectorAll('.tips-slide')[slideIndex].classList.add('active');
+            this.classList.add('active');
+        });
+    });
+    
+    // Inject Special Offers
+    const specialOffers = document.createElement('div');
+    specialOffers.className = 'special-offers-container';
+    specialOffers.innerHTML = `
+        <div class="special-offer">
+            <div class="offer-header">
+                <div class="offer-title">Limited Time Offer</div>
+                <div class="offer-close"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="offer-body">
+                <div class="offer-text">Get 10% off your first order with code <strong>FIRST</strong></div>
+                <div class="offer-countdown">Applicable on first order only (max discount - 100)</div>
+                <a href="{% url 'pharmacy:medicine_list' %}"><button class="offer-btn">Order Now</button><a/>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(specialOffers);
+    
+    // Close offer functionality
+    document.querySelector('.offer-close').addEventListener('click', function() {
+        document.querySelector('.special-offer').style.display = 'none';
+    });
+    
+    // // Inject Recently Viewed Items
+    // const recentItems = document.createElement('div');
+    // recentItems.className = 'recently-viewed';
+    // recentItems.innerHTML = `
+    //     <div class="recently-viewed-title">
+    //         <i class="fas fa-history"></i> Recently Viewed
+    //     </div>
+    //     <div class="viewed-items">
+    //         <div class="viewed-item">
+    //             <div class="viewed-item-img">
+    //                 <i class="fas fa-pills text-primary"></i>
+    //             </div>
+    //             <div class="viewed-item-name">Paracetamol</div>
+    //         </div>
+    //         <div class="viewed-item">
+    //             <div class="viewed-item-img">
+    //                 <i class="fas fa-capsules text-danger"></i>
+    //             </div>
+    //             <div class="viewed-item-name">Amoxicillin</div>
+    //         </div>
+    //         <div class="viewed-item">
+    //             <div class="viewed-item-img">
+    //                 <i class="fas fa-pills text-success"></i>
+    //             </div>
+    //             <div class="viewed-item-name">Vitamin C</div>
+    //         </div>
+    //         <div class="viewed-item">
+    //             <div class="viewed-item-img">
+    //                 <i class="fas fa-tablets text-warning"></i>
+    //             </div>
+    //             <div class="viewed-item-name">Ibuprofen</div>
+    //         </div>
+    //         <div class="viewed-item">
+    //             <div class="viewed-item-img">
+    //                 <i class="fas fa-prescription-bottle text-info"></i>
+    //             </div>
+    //             <div class="viewed-item-name">Omeprazole</div>
+    //         </div>
+    //     </div>
+    // `;
+    
+    // // Insert recently viewed before pagination
+    // if (document.querySelector('.medicines')) {
+    //     document.querySelector('.col-lg-9').insertBefore(recentItems, document.querySelector('.mt-4'));
+    // } else {
+    //     document.querySelector('.col-lg-9').appendChild(recentItems);
+    // }
+    
+    // Inject Testimonials
+    const testimonials = document.createElement('div');
+    testimonials.className = 'testimonials';
+    testimonials.innerHTML = `
+        <div class="testimonials-title">
+            <i class="fas fa-quote-left"></i> What Our Customers Say
+        </div>
+        <div class="testimonial-carousel">
+            <div class="testimonial-slide active">
+                <div class="testimonial-quote">CureClick delivered my medication the same day. Exceptional service when I needed it most!</div>
+                <div class="testimonial-author">
+                    <div class="testimonial-author-img">RS</div>
+                    <div>Rajesh S.</div>
+                </div>
+            </div>
+            <div class="testimonial-slide">
+                <div class="testimonial-quote">The app is so easy to use, and the health articles are actually informative. My go-to pharmacy now.</div>
+                <div class="testimonial-author">
+                    <div class="testimonial-author-img">AN</div>
+                    <div>Anita N.</div>
+                </div>
+            </div>
+            <div class="testimonial-slide">
+                <div class="testimonial-quote">Saved 30% compared to my local pharmacy. Their genuine products and automatic refill reminders are a lifesaver.</div>
+                <div class="testimonial-author">
+                    <div class="testimonial-author-img">MK</div>
+                    <div>Manish K.</div>
+                </div>
+            </div>
+        </div>
+        <div class="testimonial-dots">
+            <div class="testimonial-dot active" data-slide="0"></div>
+            <div class="testimonial-dot" data-slide="1"></div>
+            <div class="testimonial-dot" data-slide="2"></div>
+        </div>
+    `;
+    
+    // Insert testimonials at the end
+    document.querySelector('.col-lg-9').appendChild(testimonials);
+    
+    // Testimonial carousel functionality
+    const testimonialDots = document.querySelectorAll('.testimonial-dot');
+    testimonialDots.forEach(dot => {
+        dot.addEventListener('click', function() {
+            const slideIndex = this.getAttribute('data-slide');
+            document.querySelectorAll('.testimonial-slide').forEach(slide => slide.classList.remove('active'));
+            document.querySelectorAll('.testimonial-dot').forEach(dot => dot.classList.remove('active'));
+            document.querySelectorAll('.testimonial-slide')[slideIndex].classList.add('active');
+            this.classList.add('active');
+        });
+    });
+    
+    // Auto-rotate testimonials
+    let currentTestimonial = 0;
+    setInterval(() => {
+        currentTestimonial = (currentTestimonial + 1) % 3;
+        document.querySelectorAll('.testimonial-slide').forEach(slide => slide.classList.remove('active'));
+        document.querySelectorAll('.testimonial-dot').forEach(dot => dot.classList.remove('active'));
+        document.querySelectorAll('.testimonial-slide')[currentTestimonial].classList.add('active');
+        document.querySelectorAll('.testimonial-dot')[currentTestimonial].classList.add('active');
+    }, 5000);
+    
+    // Auto-rotate tips
+    let currentTip = 0;
+    setInterval(() => {
+        currentTip = (currentTip + 1) % 3;
+        document.querySelectorAll('.tips-slide').forEach(slide => slide.classList.remove('active'));
+        document.querySelectorAll('.tips-nav-dot').forEach(dot => dot.classList.remove('active'));
+        document.querySelectorAll('.tips-slide')[currentTip].classList.add('active');
+        document.querySelectorAll('.tips-nav-dot')[currentTip].classList.add('active');
+    }, 7000);
+});
+
+// Create a self-executing function to avoid polluting the global namespace
+(function() {
+    // Azure OpenAI configuration
+    const endpoint = "https://neela-maa2tdpw-swedencentral.openai.azure.com/openai/deployments/CureBot/chat/completions?api-version=2025-01-01-preview";
+    const apiKey = "256OQtOitExk9M6g7cniyb3vnSgv07R1YzwimDBwQHWbWonsS3BDJQQJ99BEACfhMk5XJ3w3AAAAACOGPHka";
+    
+    // Create and inject CSS
+    const injectStyles = () => {
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+            /* Base styles */
+            body {
+                font-family: 'Roboto', 'Segoe UI', sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f8fafc;
+                color: #334155;
+            }
+            
+            /* Toggle Button with enhanced design */
+            .chat-toggle {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                width: 65px;
+                height: 65px;
+                background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                box-shadow: 0 6px 16px rgba(0, 120, 215, 0.3);
+                z-index: 1000;
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                border: none;
+                outline: none;
+            }
+            
+            .chat-toggle:hover {
+                transform: translateY(-5px) scale(1.05);
+                box-shadow: 0 10px 20px rgba(0, 120, 215, 0.4);
+            }
+            
+            .chat-toggle:active {
+                transform: translateY(0) scale(0.95);
+            }
+            
+            .chat-toggle .icon {
+                font-size: 28px;
+                transition: all 0.3s ease;
+            }
+            
+            .chat-toggle::before {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.2);
+                transform: scale(0);
+                transition: transform 0.5s ease;
+            }
+            
+            .chat-toggle:hover::before {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+            
+            /* Pulse animation for the toggle button */
+            .chat-toggle::after {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.4);
+                z-index: -1;
+                animation: pulse 2s infinite;
+            }
+            
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                    opacity: 0.7;
+                }
+                70% {
+                    transform: scale(1.3);
+                    opacity: 0;
+                }
+                100% {
+                    transform: scale(1);
+                    opacity: 0;
+                }
+            }
+            
+            /* Chat Container */
+            .chat-container {
+                position: fixed;
+                bottom: 100px;
+                right: 30px;
+                width: 380px;
+                height: 520px;
+                background-color: white;
+                border-radius: 20px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                z-index: 999;
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                opacity: 0;
+                pointer-events: none;
+                transform: translateY(20px) scale(0.95);
+                border: 1px solid rgba(0, 120, 215, 0.1);
+            }
+            
+            .chat-container.active {
+                opacity: 1;
+                pointer-events: all;
+                transform: translateY(0) scale(1);
+            }
+  
+            /* Chat Header */
+            .chat-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 16px 20px;
+                background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+                color: white;
+                border-top-left-radius: 20px;
+                border-top-right-radius: 20px;
+            }
+            
+            .chat-title {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 600;
+                font-size: 18px;
+            }
+            
+            .chat-logo {
+                width: 24px;
+                height: 24px;
+                background-color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #2563eb;
+                font-size: 14px;
+                font-weight: bold;
+            }
+            
+            .chat-close {
+                background: none;
+                border: none;
+                color: white;
+                cursor: pointer;
+                font-size: 20px;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                transition: background 0.3s;
+            }
+            
+            .chat-close:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+            
+            /* Messages area */
+            .chat-messages {
+                flex: 1;
+                padding: 20px;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+                scroll-behavior: smooth;
+            }
+            
+            .message {
+                max-width: 80%;
+                padding: 12px 16px;
+                border-radius: 18px;
+                line-height: 1.4;
+                font-size: 15px;
+                word-wrap: break-word;
+                position: relative;
+                animation: fadeIn 0.3s ease-out;
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            .message.user {
+                align-self: flex-end;
+                background: #e2f1ff;
+                color: #1e40af;
+                border-bottom-right-radius: 4px;
+            }
+            
+            .message.bot {
+                align-self: flex-start;
+                background: #f1f5f9;
+                color: #334155;
+                border-bottom-left-radius: 4px;
+            }
+            
+            .typing-indicator {
+                align-self: flex-start;
+                background: #f1f5f9;
+                color: #64748b;
+                padding: 12px 16px;
+                border-radius: 18px;
+                border-bottom-left-radius: 4px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+            
+            .typing-dot {
+                width: 8px;
+                height: 8px;
+                background: #64748b;
+                border-radius: 50%;
+                animation: typingAnimation 1.4s infinite ease-in-out;
+            }
+            
+            .typing-dot:nth-child(1) { animation-delay: 0s; }
+            .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+            .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+            
+            @keyframes typingAnimation {
+                0%, 60%, 100% { transform: translateY(0); }
+                30% { transform: translateY(-5px); }
+            }
+            
+            /* Input area */
+            .chat-input-container {
+                padding: 16px;
+                background-color: #fff;
+                border-top: 1px solid #e5e7eb;
+            }
+            
+            .chat-input-form {
+                display: flex;
+                gap: 10px;
+            }
+            
+            .chat-input {
+                flex: 1;
+                padding: 8px 12px;
+                border: 1px solid #d1d5db;
+                border-radius: 24px;
+                outline: none;
+                font-size: 15px;
+                transition: border-color 0.3s, box-shadow 0.3s;
+                font-family: inherit;
+                resize: none;
+                height: auto;
+                overflow-y: hidden;
+            }
+            
+            .chat-input:focus {
+                border-color: #2563eb;
+                box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+            }
+            
+            .chat-send-btn {
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+                border: none;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s;
+                flex-shrink: 0;
+            }
+            
+            .chat-send-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 120, 215, 0.3);
+            }
+            
+            .chat-send-btn:active {
+                transform: translateY(0);
+            }
+            
+            .chat-send-btn:disabled {
+                background: #cbd5e1;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+            }
+            
+            /* Welcome message styling */
+            .welcome-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 30px 20px;
+                height: 100%;
+            }
+            
+            .welcome-icon {
+                font-size: 48px;
+                margin-bottom: 16px;
+                color: #2563eb;
+            }
+            
+            .welcome-title {
+                font-size: 22px;
+                font-weight: 600;
+                color: #1e293b;
+                margin-bottom: 12px;
+            }
+            
+            .welcome-message {
+                font-size: 16px;
+                color: #64748b;
+                margin-bottom: 24px;
+                line-height: 1.5;
+            }
+            
+            .start-chat-btn {
+                padding: 12px 24px;
+                background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+                color: white;
+                border: none;
+                border-radius: 24px;
+                font-size: 16px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+            
+            .start-chat-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 12px rgba(0, 120, 215, 0.2);
+            }
+        `;
+        document.head.appendChild(styleElement);
+    };
+    
+    // Create chat toggle button
+    const createChatToggle = () => {
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'chat-toggle';
+        toggleBtn.id = 'chatToggle';
+        toggleBtn.setAttribute('aria-label', 'Open chat');
+        
+        const icon = document.createElement('span');
+        icon.className = 'icon';
+        icon.innerHTML = '💬';
+        
+        toggleBtn.appendChild(icon);
+        document.body.appendChild(toggleBtn);
+        
+        return toggleBtn;
+    };
+    
+    // Create chat container with full interface
+    const createChatContainer = () => {
+        const container = document.createElement('div');
+        container.className = 'chat-container';
+        container.id = 'chatContainer';
+        
+        // Chat header
+        const header = document.createElement('div');
+        header.className = 'chat-header';
+        
+        const title = document.createElement('div');
+        title.className = 'chat-title';
+        
+        const logo = document.createElement('div');
+        logo.className = 'chat-logo';
+        logo.textContent = 'C';
+        
+        const titleText = document.createElement('span');
+        titleText.textContent = 'CureBot';
+        
+        title.appendChild(logo);
+        title.appendChild(titleText);
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'chat-close';
+        closeBtn.innerHTML = '✕';
+        closeBtn.setAttribute('aria-label', 'Close chat');
+        
+        header.appendChild(title);
+        header.appendChild(closeBtn);
+        
+        // Chat messages area
+        const messagesArea = document.createElement('div');
+        messagesArea.className = 'chat-messages';
+        messagesArea.id = 'chatMessages';
+        
+        // Welcome message (initial state)
+        const welcomeContainer = document.createElement('div');
+        welcomeContainer.className = 'welcome-container';
+        welcomeContainer.id = 'welcomeContainer';
+        
+        const welcomeIcon = document.createElement('div');
+        welcomeIcon.className = 'welcome-icon';
+        welcomeIcon.innerHTML = '👋';
+        
+        const welcomeTitle = document.createElement('h2');
+        welcomeTitle.className = 'welcome-title';
+        welcomeTitle.textContent = 'Welcome to CureBot';
+        
+        const welcomeMessage = document.createElement('p');
+        welcomeMessage.className = 'welcome-message';
+        welcomeMessage.textContent = 'I can help answer your healthcare questions. How can I assist you today?';
+        
+        const startChatBtn = document.createElement('button');
+        startChatBtn.className = 'start-chat-btn';
+        startChatBtn.textContent = 'Start Chatting';
+        
+        welcomeContainer.appendChild(welcomeIcon);
+        welcomeContainer.appendChild(welcomeTitle);
+        welcomeContainer.appendChild(welcomeMessage);
+        welcomeContainer.appendChild(startChatBtn);
+        
+        messagesArea.appendChild(welcomeContainer);
+        
+        // Chat input area
+        const inputContainer = document.createElement('div');
+        inputContainer.className = 'chat-input-container';
+        
+        const inputForm = document.createElement('form');
+        inputForm.className = 'chat-input-form';
+        inputForm.id = 'chatInputForm';
+        
+        const textInput = document.createElement('textarea');
+        textInput.className = 'chat-input';
+        textInput.id = 'chatInput';
+        textInput.placeholder = 'Type your message...';
+        textInput.setAttribute('rows', '1');
+        
+        const sendBtn = document.createElement('button');
+        sendBtn.className = 'chat-send-btn';
+        sendBtn.type = 'submit';
+        sendBtn.innerHTML = '➤';
+        sendBtn.setAttribute('aria-label', 'Send message');
+        
+        inputForm.appendChild(textInput);
+        inputForm.appendChild(sendBtn);
+        
+        inputContainer.appendChild(inputForm);
+        
+        // Add all elements to container
+        container.appendChild(header);
+        container.appendChild(messagesArea);
+        container.appendChild(inputContainer);
+        
+        document.body.appendChild(container);
+        
+        return container;
+    };
+    
+    // Handle chat message sending
+    const handleMessageSend = async (inputElement) => {
+        const messageText = inputElement.value.trim();
+        if (!messageText) return;
+        
+        // Clear input
+        inputElement.value = '';
+        
+        // Add user message to chat
+        addMessage(messageText, 'user');
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        try {
+            // Send message to Azure OpenAI
+            const response = await sendMessageToAzureOpenAI(messageText);
+            
+            // Hide typing indicator
+            hideTypingIndicator();
+            
+            // Add bot response
+            if (response) {
+                addMessage(response, 'bot');
+            } else {
+                addMessage("I'm sorry, I couldn't process your request. Please try again.", 'bot');
+            }
+        } catch (error) {
+            console.error('Error processing message:', error);
+            
+            // Hide typing indicator
+            hideTypingIndicator();
+            
+            // Add error message
+            addMessage("I'm sorry, there was an error processing your request. Please try again later.", 'bot');
+        }
+        
+        // Scroll to bottom
+        scrollToBottom();
+    };
+    
+    // Add a message to the chat
+    const addMessage = (text, sender) => {
+        const messagesContainer = document.getElementById('chatMessages');
+        const welcomeContainer = document.getElementById('welcomeContainer');
+        
+        // Remove welcome message if it exists
+        if (welcomeContainer && welcomeContainer.parentNode === messagesContainer) {
+            messagesContainer.removeChild(welcomeContainer);
+        }
+        
+        const messageElement = document.createElement('div');
+        messageElement.className = `message ${sender}`;
+        messageElement.textContent = text;
+        
+        messagesContainer.appendChild(messageElement);
+        
+        // Scroll to bottom
+        scrollToBottom();
+    };
+    
+    // Show typing indicator
+    const showTypingIndicator = () => {
+        const messagesContainer = document.getElementById('chatMessages');
+        
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'typing-indicator';
+        typingIndicator.id = 'typingIndicator';
+        
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'typing-dot';
+            typingIndicator.appendChild(dot);
+        }
+        
+        messagesContainer.appendChild(typingIndicator);
+        
+        // Scroll to bottom
+        scrollToBottom();
+    };
+    
+    // Hide typing indicator
+    const hideTypingIndicator = () => {
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingIndicator) {
+            typingIndicator.parentNode.removeChild(typingIndicator);
+        }
+    };
+    
+    // Scroll chat to bottom
+    const scrollToBottom = () => {
+        const messagesContainer = document.getElementById('chatMessages');
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    };
+    
+    // Send message to Azure OpenAI API
+    const sendMessageToAzureOpenAI = async (message) => {
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'api-key': apiKey
+                },
+                body: JSON.stringify({
+                    messages: [
+                        { role: "system", content: "You are a helpful healthcare assistant named CureBot. You can answer anything related to medical stuff. But you will not answer anything except it, say It is beyond my learning model! Provide accurate, helpful information on health topics, but always remind users to consult our healthcare professionals from CureClick for medical advice. Prefer to give small responses unless asked for in detail." },
+                        { role: "user", content: message }
+                    ],
+                    max_tokens: 800
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data.choices[0].message.content;
+        } catch (error) {
+            console.error('Error sending message to Azure OpenAI:', error);
+            throw error;
+        }
+    };
+    
+    // Auto-grow textarea
+    const setupTextareaAutoGrow = (textarea) => {
+        textarea.addEventListener('input', () => {
+            textarea.style.height = 'auto';
+            const newHeight = Math.min(textarea.scrollHeight, 120);
+            textarea.style.height = `${newHeight}px`;
+        });
+    };
+    
+    // Initialize chat functionality
+    const initChat = () => {
+        // Inject styles
+        injectStyles();
+        
+        // Create UI elements
+        const chatToggle = createChatToggle();
+        const chatContainer = createChatContainer();
+        
+        // Get elements
+        const closeBtn = chatContainer.querySelector('.chat-close');
+        const chatForm = document.getElementById('chatInputForm');
+        const chatInput = document.getElementById('chatInput');
+        const startChatBtn = document.querySelector('.start-chat-btn');
+        
+        // Setup textarea auto-grow
+        setupTextareaAutoGrow(chatInput);
+        
+        // Toggle chat open/close
+        chatToggle.addEventListener('click', () => {
+            chatContainer.classList.add('active');
+        });
+        
+        // Close chat
+        closeBtn.addEventListener('click', () => {
+            chatContainer.classList.remove('active');
+        });
+        
+        // Start chat button click
+        if (startChatBtn) {
+            startChatBtn.addEventListener('click', () => {
+                const welcomeContainer = document.getElementById('welcomeContainer');
+                if (welcomeContainer) {
+                    welcomeContainer.style.display = 'none';
+                }
+                
+                // Add initial bot message
+                addMessage("Hi there! I'm CureBot. How can I help with your health questions today?", 'bot');
+                
+                // Focus on input
+                chatInput.focus();
+            });
+        }
+        
+        // Handle form submission
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleMessageSend(chatInput);
+        });
+        
+        // Handle Enter key (submit on Enter, new line on Shift+Enter)
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleMessageSend(chatInput);
+            }
+        });
+    };
+    
+    // Initialize everything when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', initChat);
+  })();
+</script>
+{% endblock %}
+

@@ -1,0 +1,538 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Appointments{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/book.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="left-sidebar">
+          <div class="card card-left-stats">
+            <h3 class="card-header">
+              <i class="ri-bar-chart-line card-icon"></i>
+              Today's Stats
+            </h3>
+            <div class="stats-container">
+              <div class="stat-item">
+                <div class="stat-bg stat-bg-primary"></div>
+                <div class="stat-content">
+                  <div class="stat-label">Appointments</div>
+                  <div class="stat-value stat-value-primary">
+                    24
+                    <span class="stat-trend trend-up">↑ 12%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-bg stat-bg-green"></div>
+                <div class="stat-content">
+                  <div class="stat-label">Available Slots</div>
+                  <div class="stat-value stat-value-green">
+                    10+
+                    <span class="stat-trend trend-down">↓ 3</span>
+                  </div>
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-bg stat-bg-blue"></div>
+                <div class="stat-content">
+                  <div class="stat-label">Doctors Online</div>
+                  <div class="stat-value stat-value-blue">
+                    100+
+                    <span class="stat-trend trend-up">↑ 2</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card card-left-health">
+            <h3 class="card-header">
+              <i class="ri-heart-pulse-line card-icon"></i>
+              Health Tips
+            </h3>
+            <div class="tips-container">
+              <div class="tip-item tip-blue">
+                <div class="tip-content">
+                  <div class="tip-title tip-title-primary">Stay Hydrated</div>
+                  <div class="tip-desc">Drink 8 glasses of water daily</div>
+                </div>
+              </div>
+              <div class="tip-item tip-green">
+                <div class="tip-content">
+                  <div class="tip-title tip-title-green">Exercise Daily</div>
+                  <div class="tip-desc">30 mins moderate activity</div>
+                </div>
+              </div>
+              <div class="tip-item tip-purple">
+                <div class="tip-content">
+                  <div class="tip-title tip-title-purple">Sleep Well</div>
+                  <div class="tip-desc">7-9 hours of rest</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <div class="right-sidebar">
+          <div class="card card-right-times">
+            <h3 class="card-header">Popular Times</h3>
+            <div class="times-container">
+              <div class="time-item">
+                <div class="progress-bar">
+                  <div class="progress-fill progress-75"></div>
+                </div>
+                <span class="time-label">9AM</span>
+              </div>
+              <div class="time-item">
+                <div class="progress-bar">
+                  <div class="progress-fill progress-50"></div>
+                </div>
+                <span class="time-label">11AM</span>
+              </div>
+              <div class="time-item">
+                <div class="progress-bar">
+                  <div class="progress-fill progress-100"></div>
+                </div>
+                <span class="time-label">2PM</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card card-right-doctors">
+            <h3 class="card-header">
+              <i class="ri-star-line card-icon"></i>
+              Top Doctors
+            </h3>
+           <div class="doctors-container">
+              <div class="doctor-item">
+                <div class="doctor-icon icon-blue">
+                  <i class="ri-user-star-line"></i>
+                </div>
+                <span>Dr. Sneha Joshi</span>
+              </div>
+              <div class="doctor-item">
+                <div class="doctor-icon icon-green">
+                  <i class="ri-user-star-line"></i>
+                </div>
+                <span>Dr. Aaryan Rao</span>
+              </div>
+              <div class="doctor-item">
+                <div class="doctor-icon icon-purple">
+                  <i class="ri-user-star-line"></i>
+                </div>
+                <span>Dr. Ishita Singh</span>
+              </div>
+              <div class="button-container">
+                <button onclick="showNotification('View our full list of experienced doctors')" class="button-view-all">
+                  <i class="ri-team-line"></i>
+                  View All
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="notification"></div>
+      
+      <div class="container">
+        {% if reschedule_mode %}
+        <div class="reschedule-notification" style="background-color: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 120px; margin-top: -100px; display: flex; align-items: center; border-left: 4px solid #ffc107;">
+          <div class="notification-icon" style="margin-right: 15px; color: #856404;">
+            <i class="ri-calendar-2-line"></i>
+          </div>
+          <div style="flex: 1;">
+            <p style="margin: 0; color: #856404;">You are currently rescheduling an appointment.</p>
+            <a href="{% url 'myApp' %}?cancel_reschedule=true" 
+               style="text-decoration: none; color: #856404; font-weight: bold; display: inline-block; margin-top: 5px;">
+              <i class="ri-close-line"></i> Cancel Rescheduling
+            </a>
+          </div>
+        </div>
+        {% endif %}
+      
+        <div class="header">
+          <div class="header-text">
+            <h1>Book Appointment</h1>
+            <p>Please fill in the details below to schedule your appointment.</p>
+          </div>
+          <div class="header-image">
+            <img src="{% static 'images/doc-illus.jpg' %}" alt="Doctor illustration">
+            <div class="header-image-icon">
+              <i class="ri-stethoscope-line"></i>
+            </div>
+          </div>
+        </div>
+      
+        <form method="post" action="{% if reschedule_mode %}{% url 'book' %}?service_id={{ reschedule_data.service_id }}{% else %}{% url 'book' %}{% endif %}">
+          {% csrf_token %}
+          <div class="card" id="appointment-details-card">
+            <div class="card-decoration pulse"></div>
+            <div class="card-decoration-inner delay-pulse"></div>
+            <h2 class="card-header">
+              <div class="card-header-icon">
+                <i class="ri-calendar-line"></i>
+              </div>
+              Appointment Details
+            </h2>
+            <div class="form-group">
+              <label for="service-type-btn">Service Type</label>
+              <div class="dropdown-container">
+                <button type="button" id="service-type-btn" class="dropdown-button">
+                  <span id="selected-service">{% if reschedule_mode %}{{ service_name }}{% else %}Select a service{% endif %}</span>
+                  <i class="ri-arrow-down-s-line"></i>
+                </button>
+                <div id="service-dropdown" class="dropdown-menu">
+                  {% for service in services %}
+                    <div name="consultation_type" class="dropdown-item" data-value="{{ service.id }}">{{ service.name }}</div>
+                  {% endfor %}
+                </div>
+                <input type="hidden" name="service_id" id="service_id" value="{% if reschedule_mode %}{{ reschedule_data.service_id }}{% endif %}">
+              </div>
+            </div>
+          </div>
+      
+          <div class="card">
+            <div class="card-decoration"></div>
+            <div class="card-decoration-inner"></div>
+            <h2 class="card-header">
+              <i class="ri-user-line"></i>
+              Contact Information
+            </h2>
+            <div class="form-group">
+              <label for="full-name">Full Name</label>
+              <input type="text" id="full-name" name="full_name" placeholder="Enter your full name" 
+              value="{% if reschedule_mode %}{{ reschedule_data.full_name }}{% endif %}" required>
+            </div>
+            <div class="form-group">
+              <label for="phone-number">Phone Number</label>
+              <div class="phone-input">
+                <button type="button" id="country-code-btn" class="country-code-button">
+                  <span id="selected-code">+91</span>
+                  <i class="ri-arrow-down-s-line"></i>
+                </button>
+                <input type="tel" id="phone-number" name="phone_number" class="phone-number-input" placeholder="Enter phone number" 
+                value="{% if reschedule_mode %}{{ reschedule_data.phone_number }}{% endif %}" required>
+                <input type="hidden" name="country_code" id="country_code" value="+1">
+              </div>
+              <div id="country-dropdown" class="dropdown-menu">
+                {% for country in countries %}
+                  <div class="dropdown-item" data-value="{{ country.code }}">
+                    {{ country.name }} ({{ country.code }})
+                  </div>
+                {% endfor %}
+              </div>
+              
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" placeholder="Enter your email" 
+              value="{% if reschedule_mode %}{{ reschedule_data.email }}{% endif %}"required>
+            </div>
+            <div class="form-group">
+              <label for="age">Age</label>
+              <input type="number" id="age" name="age" placeholder="Enter your age" min="0" max="120" 
+              value="{% if reschedule_mode %}{{ reschedule_data.age }}{% else %}19{% endif %}" required>
+            </div>
+            <div class="form-group">
+              <label style="font-size: 0.9rem; margin-bottom: 11.5px;">Gender: </label>
+              <div style="display: flex; margin-left: -40px">
+                <input type="radio" id="gender-male" name="gender" value="Male" 
+                {% if reschedule_mode and reschedule_data.gender == 'Female' %}{% else %}checked{% endif %} 
+                required style="margin-left: 60px;"> 
+                <label for="gender-male" style="margin-left: 5px; font-size: 0.99rem;"> Male </label>
+                <input type="radio" id="gender-female" name="gender" value="Female" 
+                {% if reschedule_mode and reschedule_data.gender == 'Female' %}checked{% endif %}
+                required style="margin-left: 60px;"> 
+                <label for="gender-female" style="margin-left: 5px; font-size: 0.99rem"> Female </label>
+              </div>
+            </div>
+            <div class="form-group">
+                <label for="city-btn">City</label>
+                <div class="dropdown-container">
+                  <button type="button" id="city-btn" class="dropdown-button">
+                    <span id="selected-city">Select a city</span>
+                    <i class="ri-arrow-down-s-line"></i>
+                  </button>
+                  <div id="city-dropdown" class="dropdown-menu">
+                    {% for city in cities %}
+                    <div class="dropdown-item" data-value="{{ city }}">{{ city }}</div>
+                    {% endfor %}
+                  </div>
+                  <input type="hidden" name="city" id="city" value="{% if reschedule_mode %}{{ reschedule_data.city }}{% endif %}">
+                </div>
+              </div>
+          </div>
+      
+          <!-- <div class="card-summary">
+            <div class="gradient-circle-large"></div>
+            <div class="gradient-circle-small"></div>
+            <h2 class="summary-header">
+              <div class="icon-rotate">
+                <i class="ri-file-list-line"></i>
+              </div>
+              Selected Service
+            </h2>
+            <div class="summary-content" id="summary">
+              <p class="summary-text">
+                Please complete all required fields above to see your selected service details.
+              </p>
+            </div>
+          </div> -->
+      
+          <div class="terms-container">
+            <input type="checkbox" id="terms" name="terms" class="terms-checkbox" required>
+            <label for="terms" class="terms-label">
+              I agree to the terms and conditions and understand the cancellation policy.
+            </label>
+          </div>
+      
+          {% if reschedule_mode %}
+          <input type="hidden" name="reschedule_id" value="{{ reschedule_data.booking_id }}">
+          {% endif %}
+          
+          <input type="hidden" name="form_action" value="initial_book_submission">
+          
+          <button type="submit" id="next-btn" class="next-button">
+            <span class="button-shine"></span>
+            <span class="button-content">
+              <i class="ri-arrow-right-line"></i>
+              Next: Select Doctor, Date & Time
+            </span>
+          </button>
+
+          <!-- Hidden field to ensure service_id is submitted with the form when in reschedule mode -->
+          {% if reschedule_mode and reschedule_data.service_id %}
+          <input type="hidden" name="service_id" value="{{ reschedule_data.service_id }}">
+          {% endif %}
+        </form>
+      </div>
+      
+      <div id="notification" class="notification">
+        <div class="notification-content">
+          <i class="ri-checkbox-circle-line notification-icon"></i>
+          <span class="notification-text"></span>
+          <button onclick="this.parentElement.parentElement.classList.remove('show')" class="notification-close">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+      </div>
+      
+      
+      {% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/book.js' %}"></script>
+<script>
+  
+  document.addEventListener('DOMContentLoaded', function () {
+    // Add form validation
+    const bookingForm = document.querySelector('form');
+    const serviceIdInput = document.getElementById('service_id');
+    const cityInput = document.getElementById('city');
+    const termsCheckbox = document.getElementById('terms');
+    
+    if (bookingForm) {
+      bookingForm.addEventListener('submit', function(e) {
+        // Clear any existing error message
+        const existingErrorMsg = document.querySelector('.validation-error');
+        if (existingErrorMsg) {
+          existingErrorMsg.remove();
+        }
+        
+        // Check if service_id has a value
+        if (!serviceIdInput.value) {
+          e.preventDefault();
+          const errorMsg = document.createElement('div');
+          errorMsg.className = 'validation-error';
+          errorMsg.style.color = 'red';
+          errorMsg.style.padding = '10px';
+          errorMsg.style.marginTop = '10px';
+          errorMsg.style.backgroundColor = '#ffeeee';
+          errorMsg.style.borderRadius = '5px';
+          errorMsg.style.textAlign = 'center';
+          errorMsg.innerHTML = '<strong>Please select a service type before proceeding</strong>';
+          serviceIdInput.parentElement.appendChild(errorMsg);
+          document.getElementById('service-type-btn').scrollIntoView({ behavior: 'smooth' });
+          return false;
+        }
+        
+        // Check if city has a value
+        if (!cityInput.value) {
+          e.preventDefault();
+          const errorMsg = document.createElement('div');
+          errorMsg.className = 'validation-error';
+          errorMsg.style.color = 'red';
+          errorMsg.style.padding = '10px';
+          errorMsg.style.marginTop = '10px';
+          errorMsg.style.backgroundColor = '#ffeeee';
+          errorMsg.style.borderRadius = '5px';
+          errorMsg.style.textAlign = 'center';
+          errorMsg.innerHTML = '<strong>Please select a city before proceeding</strong>';
+          cityInput.parentElement.appendChild(errorMsg);
+          document.getElementById('city-btn').scrollIntoView({ behavior: 'smooth' });
+          return false;
+        }
+        
+        // Check terms checkbox
+        if (!termsCheckbox.checked) {
+          e.preventDefault();
+          const errorMsg = document.createElement('div');
+          errorMsg.className = 'validation-error';
+          errorMsg.style.color = 'red';
+          errorMsg.style.padding = '10px';
+          errorMsg.style.marginTop = '10px';
+          errorMsg.style.backgroundColor = '#ffeeee';
+          errorMsg.style.borderRadius = '5px';
+          errorMsg.style.textAlign = 'center';
+          errorMsg.innerHTML = '<strong>Please accept the terms and conditions</strong>';
+          termsCheckbox.parentElement.appendChild(errorMsg);
+          termsCheckbox.scrollIntoView({ behavior: 'smooth' });
+          return false;
+        }
+      });
+    }
+    
+    // Create app utils if it doesn't exist
+    window.AppUtils = window.AppUtils || {};
+    
+    // Define updateSummary globally
+    window.updateSummary = function() {
+      // Get inputs
+      const fullNameInput = document.getElementById('full-name');
+      const phoneNumberInput = document.getElementById('phone-number');
+      const emailInput = document.getElementById('email');
+      const ageInput = document.getElementById('age');
+      const cityInput = document.getElementById('city');
+      const serviceIdInput = document.getElementById('service_id');
+      const selectedService = document.getElementById('selected-service');
+      const selectedCode = document.getElementById('selected-code');
+
+      const genderInput = document.querySelector('input[name="gender"]:checked');
+      const genderValue = genderInput ? genderInput.value : 'Not specified';
+
+      if (
+        serviceIdInput && serviceIdInput.value &&
+        fullNameInput && fullNameInput.value &&
+        phoneNumberInput && phoneNumberInput.value &&
+        emailInput && emailInput.value &&
+        ageInput && ageInput.value &&
+        cityInput && cityInput.value &&
+        genderValue
+      ) {
+        summary.innerHTML = `
+          <p class="summary-text">
+            <strong>Service:</strong> ${selectedService.textContent}<br>
+            <strong>Patient:</strong> ${fullNameInput.value}<br>
+            <strong>Age:</strong> ${ageInput.value}<br>
+            <strong>Gender:</strong> ${genderValue}<br>
+            <strong>Contact:</strong> ${selectedCode.textContent} ${phoneNumberInput.value}
+          </p>
+        `;
+      } else {
+        summary.innerHTML = `
+          <p class="summary-text">
+            Please complete all required fields above to see your selected service details.
+          </p>
+        `;
+      }
+    };
+
+    // Process any pending summary updates
+    if (window.AppUtils.pendingSummaryUpdate) {
+      window.updateSummary();
+      window.AppUtils.pendingSummaryUpdate = false;
+    }
+    
+    // Get inputs
+    const fullNameInput = document.getElementById('full-name');
+    const phoneNumberInput = document.getElementById('phone-number');
+    const emailInput = document.getElementById('email');
+    const ageInput = document.getElementById('age');
+    const cityInput = document.getElementById('city');
+    const serviceIdInput = document.getElementById('service_id');
+    const selectedService = document.getElementById('selected-service');
+    const selectedCode = document.getElementById('selected-code');
+
+    // Attach listeners to all inputs
+    const formInputs = [fullNameInput, phoneNumberInput, emailInput, ageInput, cityInput, serviceIdInput];
+    formInputs.forEach(input => {
+      if (input) {
+        input.addEventListener('input', window.updateSummary);
+      }
+    });
+
+    // Gender radios
+    document.querySelectorAll('input[name="gender"]').forEach(radio => {
+      radio.addEventListener('change', window.updateSummary);
+    });
+
+    // Dropdowns might update textContent manually, so add observer
+    const dropdownObserver = new MutationObserver(window.updateSummary);
+    if (selectedService) dropdownObserver.observe(selectedService, { childList: true });
+    if (selectedCode) dropdownObserver.observe(selectedCode, { childList: true });
+
+    // Reschedule mode initialization - MOVED FROM NESTED EVENT LISTENER
+    const isRescheduleMode = {% if reschedule_mode %}true{% else %}false{% endif %};
+    
+    if (isRescheduleMode) {
+      console.log("In reschedule mode - initializing pre-selected values");
+      
+      // Get values from reschedule data
+      const serviceId = "{{ reschedule_data.service_id }}";
+      const serviceName = "{{ service_name }}";
+      
+      // Make sure the service_id is set correctly
+      const serviceIdInput = document.getElementById("service_id");
+      const selectedServiceSpan = document.getElementById("selected-service");
+      
+      if (serviceIdInput && serviceId) {
+        serviceIdInput.value = serviceId;
+        console.log("Set service_id to:", serviceId);
+      }
+      
+      // Also update the dropdown text
+      if (selectedServiceSpan && serviceName && serviceName !== "Select a service") {
+        selectedServiceSpan.textContent = serviceName;
+        console.log("Set service name display to:", serviceName);
+      }
+      
+      // If city is specified, update that too
+      const cityValue = "{{ reschedule_data.city }}";
+      const cityInput = document.getElementById("city");
+      const selectedCitySpan = document.getElementById("selected-city");
+      
+      if (cityInput && cityValue) {
+        cityInput.value = cityValue;
+        if (selectedCitySpan) {
+          selectedCitySpan.textContent = cityValue;
+        }
+      }
+      
+      // Force-submit the form directly if we have a valid service_id
+      window.setTimeout(function() {
+        const form = document.querySelector('form');
+        
+        if (form && serviceId) {
+          console.log("Auto-submitting form with service_id:", serviceId);
+          form.submit();
+        }
+      }, 500);
+    }
+    
+    // REMOVE THE NESTED EVENT LISTENER
+  });
+</script>
+{% endblock %}
+
+</body>
+</html>

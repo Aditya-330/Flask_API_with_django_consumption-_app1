@@ -1,0 +1,771 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Confirmation | CURECLICK{% endblock %}
+
+{% block content %}
+<style>
+/* Base Styling with Custom Properties */
+:root {
+    --primary: #2563eb;
+    --primary-light: #3b82f6;
+    --primary-dark: #1d4ed8;
+    --success: #10b981;
+    --success-light: #4ade80;
+    --bg-light: #f8fafc;
+    --bg-lighter: #f1f5f9;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --border-radius-sm: 8px;
+    --border-radius-md: 12px;
+    --border-radius-lg: 16px;
+    --border-radius-xl: 30px;
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 14px 30px rgba(0, 0, 0, 0.12);
+    --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    --primary-gradient-hover: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    --success-gradient: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+}
+
+/* Confirmation Header Section */
+.confirmation-icon {
+    color: var(--success-light);
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    animation: pulse-and-bounce 1.5s ease-in-out;
+}
+
+@keyframes pulse-and-bounce {
+    0%, 100% {transform: translateY(0) scale(1); text-shadow: 0 0 0 rgba(74, 222, 128, 0);}
+    40% {transform: translateY(-25px) scale(1.1); text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);}
+    60% {transform: translateY(-15px) scale(1.05); text-shadow: 0 0 15px rgba(74, 222, 128, 0.3);}
+    80% {transform: translateY(-5px) scale(1.02); text-shadow: 0 0 10px rgba(74, 222, 128, 0.2);}
+}
+
+.display-5 {
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: var(--primary-gradient);
+    color: white;
+    font-size: 2.5rem;
+    letter-spacing: -0.5px;
+    position: relative;
+    display: inline-block;
+}
+
+.display-5::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 25%;
+    width: 50%;
+    height: 4px;
+    background: var(--primary-gradient);
+    border-radius: 2px;
+}
+
+.lead {
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 1.5rem auto 1rem;
+}
+
+/* Order Info Section */
+.d-flex.justify-content-center.gap-4.mb-4 {
+    background: var(--bg-light);
+    border-radius: var(--border-radius-xl);
+    padding: 1rem 2rem;
+    box-shadow: var(--shadow-sm);
+    display: inline-flex !important;
+    position: relative;
+    z-index: 1;
+}
+
+.d-flex.justify-content-center.gap-4.mb-4::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
+    border-radius: var(--border-radius-xl);
+    z-index: -1;
+}
+
+.d-flex.justify-content-center.gap-4.mb-4 > div {
+    position: relative;
+    padding: 0 1.5rem;
+}
+
+.d-flex.justify-content-center.gap-4.mb-4 > div:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 20%;
+    height: 60%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--primary-light), transparent);
+}
+
+.small.text-muted {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    color: var(--text-muted) !important;
+}
+
+/* Main Card */
+.order-card {
+    border-radius: var(--border-radius-lg);
+    border: none;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: white;
+    position: relative;
+}
+
+.order-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+    z-index: 1;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+    background: var(--primary-gradient);
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0 !important;
+    padding: 1.25rem 1.75rem;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+    transform: translate(50%, -50%);
+}
+
+.card-header h5 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin: 0;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.card-body {
+    padding: 1.75rem;
+}
+
+/* Info Sections */
+.info-section {
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius-md);
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.info-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(255, 255, 255, 0) 50%);
+}
+
+.info-section:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-sm);
+}
+
+.h-100 {
+    height: 100% !important;
+}
+
+.fw-bold {
+    font-weight: 700 !important;
+}
+
+.text-primary {
+    color: var(--primary) !important;
+    position: relative;
+    margin-bottom: 1.25rem !important;
+    display: inline-block;
+    font-size: 1.1rem;
+}
+
+.text-primary::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: var(--primary-gradient);
+    border-radius: 4px;
+}
+
+.d-flex {
+    display: flex !important;
+}
+
+.mb-2 {
+    margin-bottom: 0.75rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+.mb-5 {
+    margin-bottom: 2.5rem !important;
+}
+
+/* Status Badge */
+.status-badge {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: var(--primary-dark);
+    padding: 0.4rem 1.2rem;
+    border-radius: var(--border-radius-xl);
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.7px;
+    display: inline-block;
+    text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.status-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Order Table */
+.order-table {
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.order-table thead {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.order-table th {
+    font-weight: 600;
+    padding: 1.1rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: none;
+}
+
+.order-table td {
+    padding: 1.1rem;
+    vertical-align: middle;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.95rem;
+}
+
+.order-table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.order-table tbody tr:hover {
+    background-color: var(--bg-lighter);
+    transform: translateX(5px);
+}
+
+.order-table tfoot td {
+    padding: 1rem !important;
+    font-size: 1rem;
+}
+
+/* Special rows */
+.total-row {
+    font-weight: 700;
+    background-color: var(--bg-lighter);
+    position: relative;
+}
+
+.total-row td {
+    border-top: 2px solid #e2e8f0;
+    padding-top: 1.25rem !important;
+    padding-bottom: 1.25rem !important;
+}
+
+.discount-row {
+    color: var(--success);
+}
+
+.discount-row td {
+    position: relative;
+}
+
+.discount-row td:last-child::before {
+    content: '🎁';
+    position: absolute;
+    right: calc(100% + 5px);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+}
+
+.text-end {
+    text-align: right !important;
+}
+
+/* Buttons */
+.btn-view-orders {
+    background: var(--primary-gradient);
+    border: none;
+    padding: 0.9rem 1.75rem;
+    font-weight: 600;
+    border-radius: var(--border-radius-md);
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.25);
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-view-orders::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--primary-gradient-hover);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.btn-view-orders:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+}
+
+.btn-view-orders:hover::before {
+    opacity: 1;
+}
+
+.btn-view-orders i {
+    transition: transform 0.3s ease;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.btn-view-orders:hover i {
+    transform: translateX(-3px);
+}
+
+.btn-continue {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 0.9rem 1.75rem;
+    font-weight: 600;
+    border-radius: var(--border-radius-md);
+    transition: all 0.3s ease;
+    background-color: transparent;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-continue::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary);
+    z-index: -1;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.35s ease;
+}
+
+.btn-continue:hover {
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
+}
+
+.btn-continue:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+.btn-continue i {
+    transition: transform 0.3s ease;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.btn-continue:hover i {
+    transform: translateX(-3px);
+}
+
+/* Responsive modifications */
+.table-responsive {
+    overflow-x: auto;
+    border-radius: var(--border-radius-md);
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-light) #f1f5f9;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 20px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color: var(--primary-light);
+    border-radius: 20px;
+}
+
+/* Additional polish */
+.container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.py-5 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.row {
+    margin-left: -15px;
+    margin-right: -15px;
+}
+
+/* Print optimization */
+@media print {
+    .btn-view-orders, .btn-continue {
+        display: none;
+    }
+    
+    .order-card {
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .card-header {
+        background: #f1f5f9 !important;
+        color: #1e293b !important;
+    }
+    
+    .card-header h5 {
+        color: var(--primary) !important;
+    }
+    
+    .order-table thead {
+        background: #f1f5f9 !important;
+    }
+    
+    .order-table th {
+        color: #1e293b !important;
+    }
+}
+
+/* Additional animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-body {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Added extras for delightful interactions */
+.info-section:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.info-section:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.order-table {
+    animation: fadeInUp 0.5s ease-out;
+    animation-delay: 0.3s;
+}
+
+/* Make sure everything remains visible */
+* {
+    box-sizing: border-box;
+}
+
+.no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.no-gutters > .col,
+.no-gutters > [class*="col-"] {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/* Fix any potential spacing issues */
+p {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.fas {
+    line-height: 1;
+}
+
+/* Typography enhancements */
+body {
+    line-height: 1.6;
+    color: var(--text-dark);
+}
+
+.fw-bold {
+    font-weight: 700 !important;
+}
+
+.text-white {
+    color: white !important;
+}
+</style>
+
+<div class="container py-5">
+    <!-- Confirmation Header -->
+    <div class="text-center mb-5">
+        <div class="confirmation-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h1 class="display-5 fw-bold mb-3">Order Placed Successfully!</h1>
+        <p class="lead text-muted">Thank you for your purchase. Your order is {{order.status}}</p>
+        
+        <div class="d-flex justify-content-center gap-4 mb-4">
+            <div>
+                <p class="mb-0 small text-muted">Order Number</p>
+                <p class="fw-bold">#{{ order.id }}</p>
+            </div>
+            <div>
+                <p class="mb-0 small text-muted">Order Date</p>
+                <p class="fw-bold">{{ order.created_at|date:"F j, Y, g:i a" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="order-card mb-5">
+                <div class="card-header text-white">
+                    <h5 class="mb-0" style="padding: 5px;">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Shipping and Status Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <div class="info-section h-100">
+                                <h6 class="fw-bold mb-3 text-primary">Shipping Information</h6>
+                                <div class="d-flex mb-2">
+                                    <div style="width: 100px;">
+                                        <p class="mb-0 text-muted small">Name</p>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0">{{ order.full_name }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mb-2">
+                                    <div style="width: 100px;">
+                                        <p class="mb-0 text-muted small">Contact</p>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0">{{ order.phone_number }}</p>
+                                        <p class="mb-0">{{ order.email }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <div style="width: 100px;">
+                                        <p class="mb-0 text-muted small">Address</p>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0">{{ order.address }}</p>
+                                        <p class="mb-0">{{ order.city }}, {{ order.state }} {{ order.zipcode }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-section h-100">
+                                <h6 class="fw-bold mb-3 text-primary">Order Information</h6>
+                                <div class="d-flex mb-3">
+                                    <div style="width: 120px;">
+                                        <p class="mb-0 text-muted small">Status</p>
+                                    </div>
+                                    <div>
+                                        <span class="status-badge">{{ order.status|title }}</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex mb-3">
+                                    <div style="width: 120px;">
+                                        <p class="mb-0 text-muted small">Payment Method</p>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0">{{ order.get_payment_method_display }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <div style="width: 120px;">
+                                        <p class="mb-0 text-muted small">Total Amount</p>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0 fw-bold">Rs.{{ order.final_price }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Items -->
+                    <h6 class="fw-bold mb-3 text-primary" style="padding-left: 5px;">Order Items</h6>
+                    <div class="table-responsive" style="padding: 5px;">
+                        <table class="table order-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order_items %}
+                                <tr>
+                                    <td>{{ item.medicine.name }}</td>
+                                    <td>Rs.{{ item.price }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>Rs.{{ item.get_cost }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">Subtotal</td>
+                                    <td>Rs.{{ order.total_price }}</td>
+                                </tr>
+                                {% if order.discount_amount > 0 %}
+                                <tr class="discount-row">
+                                    <td colspan="3" class="text-end fw-bold">Discount</td>
+                                    <td>-Rs.{{ order.discount_amount }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr class="total-row">
+                                    <td colspan="3" class="text-end">Total Amount</td>
+                                    <td class="fw-bold">Rs.{{ order.final_price }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="d-flex flex-column flex-md-row justify-content-center gap-3 mb-5">
+                <a href="{% url 'pharmacy:orders' %}" class="btn btn-view-orders text-white">
+                    <i class="fas fa-list me-2"></i>View All Orders
+                </a>
+                <a href="{% url 'pharmacy:medicine_list' %}" class="btn btn-continue">
+                    <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add animation to the confirmation icon
+    document.addEventListener('DOMContentLoaded', function() {
+        const icon = document.querySelector('.confirmation-icon');
+        setTimeout(() => {
+            icon.style.animation = 'none';
+            setTimeout(() => {
+                icon.style.animation = 'bounce 1s ease';
+            }, 10);
+        }, 1000);
+    });
+</script>
+{% endblock %}

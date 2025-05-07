@@ -1,0 +1,603 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Checkout | CURECLICK{% endblock %}
+
+{% block content %}
+<style>
+    /* Main Container */
+    .checkout-container {
+        padding: 2rem 0;
+        background-color: #f9fafb;
+        min-height: calc(100vh - 120px);
+    }
+    
+    /* Page Title */
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e40af;
+        margin-bottom: 0.5rem;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .page-title::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(90deg, #3182ce, #2c5282);
+        border-radius: 3px;
+    }
+    
+    /* Checkout Progress */
+    .checkout-progress {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        position: relative;
+        max-width: 600px;
+    }
+    
+    .checkout-progress::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #e2e8f0;
+        z-index: 1;
+    }
+    
+    .progress-step {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 33.33%;
+    }
+    
+    .step-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        font-weight: 600;
+        margin-bottom: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .step-text {
+        font-size: 0.875rem;
+        color: #64748b;
+        text-align: center;
+        font-weight: 500;
+    }
+    
+    .progress-step.active .step-circle {
+        background: linear-gradient(135deg, #3182ce, #2c5282);
+        color: white;
+        box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.3);
+    }
+    
+    .progress-step.active .step-text {
+        color: #2c5282;
+        font-weight: 600;
+    }
+    
+    .progress-step.completed .step-circle {
+        background: #10b981;
+        color: white;
+    }
+    
+    /* Card Styles */
+    .checkout-card {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 24px;
+        overflow: hidden;
+        background-color: white;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .checkout-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+    
+    .card-header {
+        border-radius: 0 !important;
+        background: linear-gradient(135deg, #3182ce, #2c5282);
+        padding: 1.25rem 1.5rem;
+        border: none;
+        display: flex;
+        align-items: center;
+    }
+    
+    .card-header i {
+        font-size: 1.25rem;
+        margin-right: 0.75rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    /* Order Item Styles */
+    .order-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        position: relative;
+        margin-bottom: 0.75rem;
+        border: 1px solid #edf2f7;
+    }
+    
+    .order-item:hover {
+        background-color: #f7fafc;
+        border-color: #e2e8f0;
+        transform: translateX(4px);
+    }
+    
+    .order-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .medicine-thumbnail {
+        width: 70px;
+        height: 70px;
+        object-fit: contain;
+        background-color: #f8fafc;
+        padding: 8px;
+        border-radius: 10px;
+        margin-right: 16px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        transition: transform 0.2s ease;
+    }
+    
+    .order-item:hover .medicine-thumbnail {
+        transform: scale(1.05);
+    }
+    
+    .placeholder-thumbnail {
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8fafc;
+        border-radius: 10px;
+        margin-right: 16px;
+        color: #a0aec0;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+    
+    .item-quantity {
+        background-color: #edf2f7;
+        border-radius: 20px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #4a5568;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .item-price {
+        font-weight: 600;
+        color: #1a202c;
+    }
+    
+    /* Payment Options */
+    .payment-option {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+    
+    .payment-option:hover {
+        border-color: #3182ce;
+        background-color: #ebf8ff;
+        transform: translateX(4px);
+    }
+    
+    .payment-option.active {
+        border-color: #3182ce;
+        background-color: #ebf8ff;
+        box-shadow: 0 4px 12px rgba(49, 130, 206, 0.15);
+    }
+    
+    .payment-icon {
+        width: 40px;
+        height: 40px;
+        background-color: #edf2f7;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        color: #4a5568;
+        transition: all 0.3s ease;
+    }
+    
+    .payment-option:hover .payment-icon,
+    .payment-option.active .payment-icon {
+        background-color: #3182ce;
+        color: white;
+    }
+    
+    .payment-label {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: #2d3748;
+    }
+    
+    .payment-description {
+        font-size: 0.875rem;
+        color: #718096;
+        margin-bottom: 0;
+    }
+    
+    /* Prescription Alert */
+    .prescription-alert {
+        background-color: #ebf8ff;
+        border-left: 4px solid #3182ce;
+        border-radius: 0 10px 10px 0;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        box-shadow: 0 2px 10px rgba(49, 130, 206, 0.1);
+    }
+    
+    .prescription-alert i {
+        font-size: 1.5rem;
+        color: #3182ce;
+        margin-right: 1rem;
+    }
+    
+    /* Form Styles */
+    .form-section {
+        margin-bottom: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #edf2f7;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        border-color: #e2e8f0;
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #3182ce;
+        box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+    }
+    
+    label {
+        font-weight: 500;
+        color: #4a5568;
+        margin-bottom: 0.35rem;
+    }
+    
+    /* Button Styles */
+    .btn-place-order {
+        background: linear-gradient(135deg, #3182ce, #2c5282);
+        border: none;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(49, 130, 206, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-place-order::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.6s ease;
+    }
+    
+    .btn-place-order:hover {
+        background: linear-gradient(135deg, #2c5282, #1a365d);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(44, 82, 130, 0.3);
+    }
+    
+    .btn-place-order:hover::before {
+        left: 100%;
+    }
+    
+    .btn-place-order:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(44, 82, 130, 0.3);
+    }
+    
+    /* Order Summary */
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #edf2f7;
+    }
+    
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+    
+    .total-row {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #2d3748;
+        border-top: 2px solid #edf2f7;
+        padding-top: 1rem;
+        margin-top: 0.5rem;
+    }
+    
+    .discount-row {
+        color: #38a169;
+        font-weight: 500;
+    }
+    
+    .discount-value {
+        color: #38a169;
+        font-weight: 600;
+    }
+    
+    .total-value {
+        color: #3182ce;
+    }
+    
+    /* Sticky Summary Positioning */
+    .summary-wrapper {
+        position: sticky;
+        top: 100px; /* Increased to avoid navbar overlap */
+        z-index: 10;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .checkout-container {
+            padding: 1rem 0;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .medicine-thumbnail, .placeholder-thumbnail {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+    }
+</style>
+
+<div class="checkout-container">
+    <div class="container">
+        <h1 class="page-title mb-4">Checkout</h1>
+        
+        <!-- Checkout Progress -->
+        <div class="checkout-progress mb-4">
+            <div class="progress-step completed">
+                <div class="step-circle">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="step-text">Shopping Cart</div>
+            </div>
+            <div class="progress-step active">
+                <div class="step-circle">2</div>
+                <div class="step-text">Checkout</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle">3</div>
+                <div class="step-text">Confirmation</div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Shipping Information -->
+            <div class="col-lg-8">
+                <div class="checkout-card">
+                    <div class="card-header text-white">
+                        <i class="fas fa-shipping-fast"></i>
+                        <h5 class="mb-0">Shipping Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ checkout_form|crispy }}
+                            
+                            {% if requires_prescription %}
+                            <div class="form-section mt-4">
+                                <h5 class="section-title">Prescription Upload</h5>
+                                <div class="prescription-alert">
+                                    <i class="fas fa-prescription"></i>
+                                    <div>
+                                        <h6 class="alert-heading mb-1">Prescription Required</h6>
+                                        <p class="mb-0">One or more items in your cart require a valid prescription. Please upload a clear image or PDF of your prescription.</p>
+                                    </div>
+                                </div>
+                                {{ prescription_form|crispy }}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="form-section mt-4">
+                                <h5 class="section-title">Payment Method</h5>
+                                <input type="hidden" name="payment_method" id="payment_method" value="cod">
+                                
+                                <div class="payment-option active" data-payment="cod" onclick="selectPayment('cod')">
+                                    <div class="payment-icon">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                    </div>
+                                    <div>
+                                        <div class="payment-label">Cash on Delivery</div>
+                                        <p class="payment-description">Pay when you receive your order</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="payment-option" data-payment="credit_card" onclick="selectPayment('credit_card')">
+                                    <div class="payment-icon">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                    <div>
+                                        <div class="payment-label">Credit Card</div>
+                                        <p class="payment-description">Pay securely with your credit card</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="payment-option" data-payment="debit_card" onclick="selectPayment('debit_card')">
+                                    <div class="payment-icon">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                    <div>
+                                        <div class="payment-label">Debit Card</div>
+                                        <p class="payment-description">Pay directly from your bank account</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="payment-option" data-payment="upi" onclick="selectPayment('upi')">
+                                    <div class="payment-icon">
+                                        <i class="fas fa-mobile-alt"></i>
+                                    </div>
+                                    <div>
+                                        <div class="payment-label">UPI Payment</div>
+                                        <p class="payment-description">Pay using UPI apps like Google Pay, PhonePe, etc.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="payment-option" data-payment="wallet" onclick="selectPayment('wallet')">
+                                    <div class="payment-icon">
+                                        <i class="fas fa-wallet"></i>
+                                    </div>
+                                    <div>
+                                        <div class="payment-label">Digital Wallet</div>
+                                        <p class="payment-description">Pay using digital wallets like Paytm, Amazon Pay, etc.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-place-order text-white">
+                                    <i class="fas fa-check-circle me-2"></i>Place Order
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="summary-wrapper">
+                    <div class="checkout-card">
+                        <div class="card-header text-white">
+                            <i class="fas fa-shopping-basket"></i>
+                            <h5 class="mb-0">Order Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for item in cart_items %}
+                            <div class="order-item">
+                                <div class="flex-shrink-0">
+                                    {% if item.medicine.image %}
+                                        <img src="{{ item.medicine.image.url }}" alt="{{ item.medicine.name }}" class="medicine-thumbnail">
+                                    {% else %}
+                                        <div class="placeholder-thumbnail">
+                                            <i class="fas fa-pills fa-lg"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">{{ item.medicine.name }}</h6>
+                                    <div class="item-quantity">
+                                        <i class="fas fa-times-circle me-1 small"></i>
+                                        {{ item.quantity }}
+                                    </div>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <p class="mb-0 item-price">Rs.{{ item.get_cost }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                            <div class="summary-details mt-4">
+                                <div class="summary-row">
+                                    <span>Subtotal</span>
+                                    <span>Rs.{{ cart.get_total_price }}</span>
+                                </div>
+                                
+                                {% if cart.promo_code %}
+                                <div class="summary-row discount-row">
+                                    <span>Discount ({{ cart.promo_code.code }})</span>
+                                    <span class="discount-value">-Rs.{{ cart.get_discount_amount }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="summary-row total-row">
+                                    <span>Total Amount</span>
+                                    <span class="total-value">Rs.{{ cart.get_final_price }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function selectPayment(paymentMethod) {
+        // Update hidden input value
+        document.getElementById('payment_method').value = paymentMethod;
+        
+        // Remove active class from all payment options
+        const paymentOptions = document.querySelectorAll('.payment-option');
+        paymentOptions.forEach(option => {
+            option.classList.remove('active');
+        });
+        
+        // Add active class to selected payment option
+        const selectedOption = document.querySelector(`.payment-option[data-payment="${paymentMethod}"]`);
+        selectedOption.classList.add('active');
+    }
+</script>
+{% endblock %}

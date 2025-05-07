@@ -1,0 +1,617 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Management | CURECLICK{% endblock %}
+
+{% block content %}
+<style>
+    .order-dashboard {
+        padding: 2rem;
+        background-color: #f9fafb;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1e40af;
+        position: relative;
+    }
+
+    .dashboard-title::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 40px;
+        height: 3px;
+        background: linear-gradient(90deg, #3182ce, #2c5282);
+        border-radius: 3px;
+    }
+
+    .filters-container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+    }
+
+    .filters-container:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter-section {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+    .filter-item {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #4b5563;
+        margin-bottom: 0.5rem;
+    }
+
+    .filter-input, .filter-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background-color: #f9fafb;
+        transition: all 0.2s;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+        outline: none;
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .filter-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+    }
+
+    .filter-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .filter-btn-apply {
+        background-color: #3182ce;
+        color: white;
+        border: none;
+    }
+
+    .filter-btn-apply:hover {
+        background-color: #2c5282;
+    }
+
+    .filter-btn-reset {
+        background-color: white;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+    }
+
+    .filter-btn-reset:hover {
+        background-color: #f9fafb;
+    }
+
+    .orders-card {
+        background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .order-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .stat-pending {
+        background-color: #fffaf0;
+        color: #dd6b20;
+    }
+
+    .stat-processing {
+        background-color: #ebf8ff;
+        color: #3182ce;
+    }
+
+    .stat-delivered {
+        background-color: #f0fff4;
+        color: #38a169;
+    }
+
+    .stat-all {
+        background-color: #f3f4f6;
+        color: #4b5563;
+    }
+
+    .stat-info {
+        flex: 1;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1.2;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    .order-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .order-table thead th {
+        background-color: #f8fafc;
+        color: #4a5568;
+        font-weight: 600;
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .order-table tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .order-table tbody tr {
+        transition: all 0.2s;
+    }
+
+    .order-table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    .order-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .badge-status {
+        padding: 0.5rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.75rem;
+    }
+
+    .badge-status i {
+        margin-right: 0.25rem;
+    }
+
+    .pending {
+        background-color: #fffaf0;
+        color: #dd6b20;
+    }
+
+    .processing {
+        background-color: #ebf8ff;
+        color: #3182ce;
+    }
+
+    .shipped {
+        background-color: #f0f9ff;
+        color: #3182ce;
+    }
+
+    .delivered {
+        background-color: #f0fff4;
+        color: #38a169;
+    }
+
+    .cancelled {
+        background-color: #fff5f5;
+        color: #e53e3e;
+    }
+
+    .action-btn {
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .btn-manage {
+        background-color: #3182ce;
+        color: white;
+        border: none;
+    }
+
+    .btn-manage:hover {
+        background-color: #2c5282;
+    }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+
+    .pagination {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-item {
+        margin: 0;
+    }
+
+    .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        background-color: white;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+        border-right: none;
+        font-weight: 500;
+        min-width: 40px;
+        transition: all 0.2s;
+    }
+
+    .page-item:last-child .page-link {
+        border-right: 1px solid #e5e7eb;
+    }
+
+    .page-item.active .page-link {
+        background-color: #3182ce;
+        color: white;
+        border-color: #3182ce;
+    }
+
+    .page-link:hover:not(.active) {
+        background-color: #f9fafb;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        color: #94a3b8;
+        margin-bottom: 1rem;
+    }
+
+    .empty-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-description {
+        color: #64748b;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .order-table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+</style>
+
+<div class="container py-4">
+    <div class="order-dashboard">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Order Management</h1>
+            <div class="header-actions">
+                <a href="{% url 'pharmacy:medicine_management' %}" class="action-btn btn-manage" style="text-decoration: none;">
+                    <i class="ri-medicine-bottle-line"></i>
+                    <span>Manage Medicines</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Order Statistics -->
+        <div class="order-stats">
+            <div class="stat-card">
+                <div class="stat-icon stat-all">
+                    <i class="ri-shopping-cart-2-line"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ total_orders }}</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon stat-pending">
+                    <i class="ri-time-line"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ pending_count }}</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon stat-processing">
+                    <i class="ri-loader-4-line"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ processing_count }}</div>
+                    <div class="stat-label">Processing</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon stat-delivered">
+                    <i class="ri-check-double-line"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ delivered_count }}</div>
+                    <div class="stat-label">Delivered</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="filters-container">
+            <form method="get" action="{% url 'pharmacy:order_list' %}" id="filters-form">
+                <div class="filter-section">
+                    <div class="filter-item">
+                        <label class="filter-label" for="order_id">Order ID</label>
+                        <input type="text" id="order_id" name="order_id" class="filter-input" placeholder="e.g. 1234" value="{{ request.GET.order_id|default:'' }}">
+                    </div>
+                    
+                    <div class="filter-item">
+                        <label class="filter-label" for="customer">Customer Name</label>
+                        <input type="text" id="customer" name="customer" class="filter-input" placeholder="Enter customer name" value="{{ request.GET.customer|default:'' }}">
+                    </div>
+                    
+                    <div class="filter-item">
+                        <label class="filter-label" for="status">Status</label>
+                        <select id="status" name="status" class="filter-select">
+                            <option value="">All Statuses</option>
+                            <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="processing" {% if request.GET.status == 'processing' %}selected{% endif %}>Processing</option>
+                            <option value="shipped" {% if request.GET.status == 'shipped' %}selected{% endif %}>Shipped</option>
+                            <option value="delivered" {% if request.GET.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                            <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-item">
+                        <label class="filter-label" for="date_from">Date From</label>
+                        <input type="date" id="date_from" name="date_from" class="filter-input" value="{{ request.GET.date_from|default:'' }}">
+                    </div>
+                    
+                    <div class="filter-item">
+                        <label class="filter-label" for="date_to">Date To</label>
+                        <input type="date" id="date_to" name="date_to" class="filter-input" value="{{ request.GET.date_to|default:'' }}">
+                    </div>
+                </div>
+                
+                <div class="filter-buttons">
+                    <button type="button" id="reset-btn" class="filter-btn filter-btn-reset">Reset</button>
+                    <button type="submit" class="filter-btn filter-btn-apply">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Orders Table -->
+        <div class="orders-card">
+            <div class="table-responsive">
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Prescription</th>
+                            <th>Payment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if orders %}
+                            {% for order in orders %}
+                            <tr>
+                                <td><strong>#{{ order.id }}</strong></td>
+                                <td>
+                                    <div>{{ order.full_name }}</div>
+                                    <small class="text-muted">{{ order.email }}</small>
+                                </td>
+                                <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                <td><strong>Rs.{{ order.final_price }}</strong></td>
+                                <td>
+                                    <span class="badge-status {{ order.status }}">
+                                        {% if order.status == 'pending' %}
+                                            <i class="ri-time-line"></i>
+                                        {% elif order.status == 'processing' %}
+                                            <i class="ri-loader-4-line"></i>
+                                        {% elif order.status == 'shipped' %}
+                                            <i class="ri-truck-line"></i>
+                                        {% elif order.status == 'delivered' %}
+                                            <i class="ri-check-double-line"></i>
+                                        {% elif order.status == 'cancelled' %}
+                                            <i class="ri-close-circle-line"></i>
+                                        {% endif %}
+                                        {{ order.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if order.prescriptions.all %}
+                                        {% for prescription in order.prescriptions.all %}
+                                            <a href="{{prescription.image.url}}" target="_blank" class="action-btn filter-btn-reset" style="text-decoration: none;">
+                                                <i class="ri-file-text-line"></i> View
+                                            </a>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-muted"><i class="ri-information-line"></i> Not Required</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ order.get_payment_method_display }}</td>
+                                <td>
+                                    <a href="{% url 'pharmacy:order_management' order.id %}" class="action-btn btn-manage" style="text-decoration: none;">
+                                        <i class="ri-settings-line"></i> Manage
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="8">
+                                    <div class="empty-state">
+                                        <i class="ri-shopping-cart-2-line empty-icon"></i>
+                                        <h3 class="empty-title">No Orders Found</h3>
+                                        <p class="empty-description">There are no orders matching your filters. Try adjusting your search criteria.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        {% if orders.has_other_pages %}
+        <div class="pagination-container">
+            <ul class="pagination">
+                {% if orders.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" style="text-decoration: none;">&laquo;</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ orders.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" style="text-decoration: none;">&lsaquo;</a>
+                    </li>
+                {% endif %}
+                
+                {% for num in orders.paginator.page_range %}
+                    {% if orders.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" style="text-decoration: none;">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if orders.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ orders.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" style="text-decoration: none;">&rsaquo;</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ orders.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" style="text-decoration: none;">&raquo;</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const resetBtn = document.getElementById('reset-btn');
+        const filtersForm = document.getElementById('filters-form');
+        
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function(e) {
+                // Clear all form inputs
+                const inputs = document.querySelectorAll('.filter-input, .filter-select');
+                inputs.forEach(input => {
+                    if (input.type === 'checkbox' || input.type === 'radio') {
+                        input.checked = false;
+                    } else {
+                        input.value = '';
+                    }
+                });
+                
+                // Submit the form with cleared values
+                filtersForm.submit();
+            });
+        }
+    });
+</script>
+{% endblock %}

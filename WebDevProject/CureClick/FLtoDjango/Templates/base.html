@@ -1,0 +1,179 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} CureClick {% endblock %}</title>
+    <link rel="icon" href="{% static 'images/logo3.png' %}" type="image/png">
+     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+     <link rel="stylesheet" href="/static/css/style.css">
+     <style>
+        /* Remove the message styling since it's now in messages.html */
+     </style>
+</head>
+<body>
+    <nav class="cc-navbar">
+        <div class="cc-navbar__brand">
+            <a href="" class="cc-navbar__logo">
+                <img src="{% static 'images/logo3.png' %}" alt="CureClick Logo">
+                <span>CureClick</span>
+            </a>
+        </div>
+        
+        <div class="cc-navbar__menu-btn" id="menu-btn">
+            <i class="ri-menu-line"></i>
+        </div>
+        
+        {% if request.path == '/docDash/' %}
+        <!-- Doctor Dashboard Navigation -->
+        <ul class="cc-navbar__links" id="nav-links">
+            <li><a href="{% url 'docDash' %}">Dashboard</a></li>
+            <li><a href="{% url 'index' %}">Home</a></li>
+
+        </ul>
+        {% else %}
+        <!-- Regular User Navigation -->
+        <ul class="cc-navbar__links" id="nav-links">
+            <li><a href="{% url 'index' %}">Home</a></li>
+            
+            <li><a href="{% url 'whyAb' %}">Why & About Us</a></li>
+            <li><a href="{% url 'book' %}">Book Appointments</a></li>
+            <li><a href="{% url 'pharmacy:medicine_list' %}">Order Medicines</a></li>
+            {% if user.is_staff %}
+            <li><a href="{% url 'pharmacy:order_list' %}">Orders</a></li>
+            {% endif %}
+            {% if user.is_superuser %}
+            <li><a href="{% url 'admin:index' %}">Admin Panel</a></li>
+
+            {% endif %}
+        </ul>
+        {% endif %}
+        
+        {% if user.is_authenticated %}
+        
+            <a class="nav-link" href="{% url 'pharmacy:cart' %}">
+                
+                <i class="fas fa-shopping-cart"></i>
+                Cart
+            </a>
+        
+        <div class="dropdown">
+            <a href="javascript:void(0)" class="cc-navbar__user">
+                <div class="cc-navbar__user-icon">
+                    <i class="ri-user-3-line"></i>
+                </div>
+                <span class="cc-navbar__username">
+                    {{ user.username }}
+                </span>
+            </a>
+            <div class="dropdown-content">
+                {% if request.path == '/docDash/' %}
+                    <!-- Doctor-specific dropdown options -->
+                    <a href="{% url 'docDash' %}"><i class="ri-dashboard-line"></i> Dashboard</a>
+                {% else %}
+                    <!-- Regular user dropdown options -->
+                    <a href="{% url 'profile' %}"><i class="ri-user-settings-line"></i> Profile</a>
+                {% endif %}
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'logout' %}" class="logout-btn"><i class="ri-logout-box-line"></i> Logout</a>
+            </div>
+        </div>
+        {% else %}
+        <a href="{% url 'login' %}" class="cc-navbar__signin">Sign-in</a>
+        {% endif %}
+    </nav>
+    
+    {% include "messages.html" %}
+    
+    <h1>{% block head %}{% endblock %}</h1>
+    {% block content %}{% endblock %}
+
+
+    <footer class="cc-footer">
+        <div class="cc-footer__container">
+            <div class="cc-footer__col">
+                <div class="cc-footer__logo">
+                    <a href="">
+                        <img src="{% static 'images/logo3.png' %}" alt="CureClick Logo">
+                        <span>CureClick</span>
+                    </a>
+                </div>
+                <p>
+                    We're here to provide you with the best medical experts and a seamless appointment booking
+                    experience. Stay connected for updates, special offers and more. Appointments done easy, just
+                    <i>Click</i> for <i>Cure</i>!
+                </p>
+                <ul class="cc-footer__socials">
+                    <li>
+                        <a href=""><i class="ri-facebook-fill"></i></a>
+                        <a href=""><i class="ri-twitter-x-fill"></i></a>
+                        <a href=""><i class="ri-linkedin-fill"></i></a>
+                        <a href=""><i class="ri-instagram-line"></i></a>
+                        <a href=""><i class="ri-youtube-fill"></i></a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="cc-footer__col">
+                <h4>Our Services</h4>
+                <ul class="cc-footer__links">
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'whyAb' %}">Why & About Us</a></li>
+                    <li><a href="{% url 'book' %}">Book Appointments</a></li>
+                    <li><a href="{% url 'myApp' %}">My Appointments</a></li>
+                    <li><a href="{% url 'pharmacy:medicine_list' %}">Order Medicines</a></li>
+                </ul>
+            </div>
+    
+            <div class="cc-footer__col">
+                <h4>Health Checkups</h4>
+                <ul class="cc-footer__links">
+                    <li><a href="">Common Cold</a></li>
+                    <li><a href="">Depression</a></li>
+                    <li><a href="">Orthopedic</a></li>
+                    <li><a href="">Dental Checkup</a></li>
+                    <li><a href="">Eye Infection</a></li>
+                </ul>
+            </div>
+            
+            <div class="cc-footer__col">
+                <h4>Contact</h4>
+                <ul class="cc-footer__links">
+                    <li>
+                        <a href="">
+                            <span><i class="ri-phone-fill"></i></span> +91 7719493851
+                        </a>
+                    </li>
+                    <li>
+                        <a href="">
+                            <span><i class="ri-map-pin-fill"></i></span> Chitkara University, Punjab
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:cureclick1@gmail.com">
+                            <span><i class="ri-mail-fill"></i></span> cureclick1@gmail.com
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="cc-footer__bar">
+            Copyright &copy; 2025 CureClick. All rights reserved. Aditya | Neelabh | Dhruv | Saksham
+        </div>
+    </footer>
+
+    {% block scripts %}
+    <script src="https://unpkg.com/scrollreveal"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="{% static 'js/base.js' %}"></script>
+<script src="{% static 'js/common.js' %}"></script>
+{% endblock %}
+
+</body>
+</html>

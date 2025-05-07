@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Appointments{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/myApp.css' %}" />
+  <style>
+    .message-fade {
+      opacity: 1;
+      transition: opacity 0.5s ease-in-out;
+    }
+    
+    .messages {
+      position: relative;
+      z-index: 100;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto 15px auto;
+    }
+    
+    @keyframes slideInDown {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .message {
+      animation: slideInDown 0.3s ease-out forwards;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="main-content">
+    <div class="page-title">
+      <div class="background-circle top-right"></div>
+      <div class="background-circle bottom-left"></div>
+      <div class="title-content">
+        <h1 class="title">My Confirmed Appointments</h1>
+        <p class="subtitle">You have {{ upcoming_count }} upcoming appointments</p>
+
+        {% if reschedule_mode %}
+        <div class="reschedule-notification" style="display: flex; align-items: center; background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <div class="notification-icon" style="margin-right: 15px; color: #856404;">
+            <i class="ri-calendar-2-line"></i>
+          </div>
+          <div style="flex: 1;">
+            <p style="margin: 0; color: #856404;">You are currently rescheduling an appointment. Complete the booking process or cancel.</p>
+            <div style="margin-top: 10px;">
+              <a href="{% url 'book' %}" style="text-decoration: none; color: #0b5ed7; font-weight: bold; background-color: #f0f9ff; padding: 5px 10px; border-radius: 4px; margin-right: 10px;">
+                <i class="ri-calendar-2-line"></i> Continue Rescheduling
+              </a>
+              <a href="{% url 'myApp' %}?cancel_reschedule=true" style="text-decoration: none; color: #dc3545; font-weight: bold; background-color: #fff5f5; padding: 5px 10px; border-radius: 4px;">
+                <i class="ri-close-line"></i> Cancel Rescheduling
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="date-display">
+          <div class="calendar-icon">
+            <i class="ri-calendar-line"></i>
+          </div>
+          <span>Today is {{ today_date }}</span>
+        </div>
+
+        {% if not appointments %}
+        <div class="new-appointment-button" style="width: 240px; margin-top: 10px; padding-bottom: -10px;">
+          <a href="{% url 'book' %}" class="btn primary-btn" style="text-decoration: none;">
+            <div class="btn-icon">
+              <i class="ri-add-line"></i>
+            </div>
+            <span>Book New Appointment</span>
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% for appointment in appointments %}
+    <!-- Appointment Card -->
+    <div
+      class="appointment-card {% cycle 'primary-card' 'secondary-card' 'purple-card' %} {% if appointment.is_being_rescheduled %}reschedule-in-progress{% endif %}"
+      style="margin-bottom: 20px;">
+      <!-- Card Header -->
+      <div class="card-header">
+        <div class="doctor-info">
+          <div class="doctor-avatar">
+            <div class="avatar-icon">
+              <i class="ri-user-heart-line"></i>
+            </div>
+          </div>
+          <div>
+            <div class="appointment-tags">
+              <span class="tag blue-tag">{{ appointment.id }}</span>
+              <span class="tag green-tag">{{ appointment.type|default:"General" }}</span>
+              {% if appointment.is_being_rescheduled %}
+              <span class="tag orange-tag">Rescheduling</span>
+              {% endif %}
+            </div>
+            <h3 class="doctor-name">Dr. {{ appointment.doctor.name|default:"Doctor" }}</h3>
+            <p class="doctor-specialty" style="margin-top: -10px;">{{ appointment.doctor.specialty|default:"General" }}</p>
+            <p class="doctor-department" style="margin-top: -15px;">{{ appointment.doctor.department|default:"General Department" }}</p>
+            <p class="doctor-location" style="margin-top: -15px; display: flex; align-items: center;">
+              <span style="display: inline-flex; align-items: center; margin-right: 5px; color: #0066cc; background-color: #e6f2ff; padding: 2px 8px; border-radius: 4px; font-weight: bold;">
+                <i class="ri-map-pin-2-line" style="margin-right: 3px;"></i>
+                {{ appointment.doctor.city|default:"Location not available" }}
+              </span>
+            </p>
+          </div>
+        </div>
+        <div class="appointment-date">
+          <p class="date">{{ appointment.date }}</p>
+          <p class="time">{{ appointment.time }}</p>
+        </div>
+      </div>
+
+      <!-- Card Details -->
+      <div class="card-details">
+        <!-- Patient Info -->
+        <div class="info-section">
+          <div class="section-title">
+            <div class="section-icon"><i class="ri-user-line"></i></div>
+            <h4 style="font-size: 17.5px; margin-top: 8px;">Patient Information</h4>
+          </div>
+          <div class="info-list">
+            <div class="info-item">
+              <div class="info-icon"><i class="ri-user-3-line"></i></div>
+              <p>{{ appointment.patient.name|default:"Patient" }}</p>
+            </div>
+            <div class="info-item" style="margin-top: -12px;">
+              <div class="info-icon"><i class="ri-calendar-line"></i></div>
+              <p>{{appointment.patient.age}}</p>
+            </div> 
+          </div>
+        </div>
+
+        <!-- Appointment Info -->
+        <div class="info-section">
+          <div class="section-title">
+            <div class="section-icon"><i class="ri-calendar-check-line"></i></div>
+            <h4 style="font-size: 17.5px; margin-top: 8px;">Appointment Details</h4>
+          </div>
+          <div class="info-list">
+            <div class="info-item">
+              <div class="info-icon"><i class="ri-stethoscope-line"></i></div>
+              <p>{{ appointment.type|default:"General" }}</p>
+            </div>
+            <div class="info-item" style="margin-top: -15px;">
+              <div class="info-icon"><i class="ri-hospital-line"></i></div>
+              <p>{{ appointment.doctor.clinic|default:"Hospital" }}</p>
+            </div>
+            <div class="info-item" style="margin-top: -15px;">
+              <div class="info-icon" style="font-weight: bold;">₹</div>
+              <p style="font-weight: bold;">Total Amount: {{ appointment.fees|floatformat:"0"|default:"0" }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Actions -->
+      <div class="card-actions">
+        <div class="action-links">
+          <button class="action-link">
+            <div class="action-icon"><i class="ri-message-3-line"></i></div>
+            <span>Message</span>
+          </button>
+          <button class="action-link">
+            <div class="action-icon"><i class="ri-map-pin-line"></i></div>
+            <span>Get Directions</span>
+          </button>
+        </div>
+        <div class="action-buttons">
+          {% if appointment.is_being_rescheduled %}
+          <a href="{% url 'book' %}" class="btn primary-btn" style="text-decoration: none;">
+            <div class="btn-icon"><i class="ri-calendar-2-line"></i></div>
+            <span>Continue Rescheduling</span>
+          </a>
+          {% else %}
+          <a href="{% url 'reschedule' appointment.booking_id %}" class="btn primary-btn"
+            style="text-decoration: none;">
+            <div class="btn-icon"><i class="ri-calendar-2-line"></i></div>
+            <span>Reschedule</span>
+          </a>
+          {% endif %}
+          <button id="cancelBtn-{{ appointment.booking_id }}" class="btn danger-btn cancel-btn" style="text-decoration: none;">
+            <div class="btn-icon"><i class="ri-close-line"></i></div>
+            <span>Cancel</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal with improved appearance -->
+      <div id="confirmationModal-{{ appointment.booking_id }}" class="modal"
+        style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content"
+          style="background-color: #fefefe; margin: 15% auto; padding: 25px; border: 1px solid #888; width: 90%; max-width: 450px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+          <h3 style="margin-top: 0; color: #333; font-size: 22px;">Cancel Appointment</h3>
+          <p style="color: #555; margin-bottom: 20px;">Are you sure you want to cancel this appointment?</p>
+          <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 25px;">
+            <button class="btn closeModal" data-id="{{ appointment.booking_id }}"
+              style="background-color: #333; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500;">No,
+              Keep</button>
+            <form method="POST" action="{% url 'myApp' %}">
+              {% csrf_token %}
+              <input type="hidden" name="booking_id" value="{{ appointment.booking_id }}">
+              <button type="submit" name="cancel_booking" value="true" class="btn danger-btn"
+                style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500;">
+                Yes, Cancel
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </main>
+
+  {% endblock %}
+
+  {% block scripts %}
+  <script src="{% static 'js/myApp.js' %}"></script>
+  <script>
+    // Improved inline script for modals
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("Inline script loaded");
+      
+      // Debug doctor locations
+      document.querySelectorAll('.doctor-location').forEach(function(elem) {
+        console.log("Doctor location found:", elem.textContent.trim());
+      });
+      
+      // Cancel buttons
+      document.querySelectorAll('.cancel-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const bookingId = this.id.split('-')[1];
+          const modal = document.getElementById(`confirmationModal-${bookingId}`);
+          if (modal) {
+            modal.style.display = 'block';
+            
+            // Add event listener for the No, Keep button
+            const closeBtn = modal.querySelector('.closeModal');
+            if (closeBtn) {
+              closeBtn.onclick = function() {
+                modal.style.display = 'none';
+              };
+            }
+            
+            // Close if user clicks outside modal
+            window.onclick = function(event) {
+              if (event.target == modal) {
+                modal.style.display = 'none';
+              }
+            };
+          }
+        });
+      });
+      
+      // Escape key to close modal
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+          document.querySelectorAll('.modal').forEach(function(modal) {
+            if (modal.style.display === 'block') {
+              modal.style.display = 'none';
+            }
+          });
+        }
+      });
+    });
+  </script>
+  {% endblock %}
+</body>
+
+</html>

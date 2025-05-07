@@ -1,0 +1,141 @@
+{% if messages %}
+<div class="messages-container">
+  <button class="clear-all-messages" onclick="document.querySelector('.messages-container').remove()">
+    Dismiss All
+  </button>
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}">
+    <span>
+      {% if message.tags == 'success' %}
+        <i class="ri-checkbox-circle-line" style="margin-right: 8px;"></i>
+      {% elif message.tags == 'error' %}
+        <i class="ri-error-warning-line" style="margin-right: 8px;"></i>
+      {% elif message.tags == 'warning' %}
+        <i class="ri-alert-line" style="margin-right: 8px;"></i>
+      {% elif message.tags == 'info' %}
+        <i class="ri-information-line" style="margin-right: 8px;"></i>
+      {% else %}
+        <i class="ri-notification-line" style="margin-right: 8px;"></i>
+      {% endif %}
+      {{ message }}
+    </span>
+    <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+  </div>
+  {% endfor %}
+</div>
+
+<style>
+  /* Message styling */
+  .messages-container {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    max-width: 300px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: auto;
+  }
+  
+  .alert {
+    padding: 12px;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    color: white;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    animation: slideIn 0.3s ease;
+    background-color: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    margin-bottom: 5px;
+    max-width: 100%;
+    word-break: break-word;
+  }
+  
+  .alert-error {
+    background-color: rgba(220, 53, 69, 0.9);
+  }
+  
+  .alert-warning {
+    background-color: rgba(255, 193, 7, 0.9);
+    color: #212529;
+  }
+  
+  .alert-info {
+    background-color: rgba(13, 202, 240, 0.9);
+  }
+  
+  .alert-success {
+    background-color: rgba(40, 167, 69, 0.9);
+  }
+  
+  .alert-close {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 10px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  
+  .alert-close:hover {
+    opacity: 1;
+  }
+  
+  .clear-all-messages {
+    align-self: flex-end;
+    background-color: rgba(0,0,0,0.7);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-bottom: 5px;
+    transition: background-color 0.2s;
+  }
+  
+  .clear-all-messages:hover {
+    background-color: rgba(0,0,0,0.85);
+  }
+  
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* New: make sure messages don't cover content */
+  @media (max-width: 768px) {
+    .messages-container {
+      max-width: 250px;
+    }
+  }
+</style>
+
+<script>
+  // Auto-dismiss messages after 5 seconds
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      const messagesContainer = document.querySelector('.messages-container');
+      if (messagesContainer) {
+        const fadeOut = function() {
+          if (messagesContainer.style.opacity > 0) {
+            messagesContainer.style.opacity -= 0.1;
+            setTimeout(fadeOut, 50);
+          } else {
+            messagesContainer.remove();
+          }
+        };
+        
+        messagesContainer.style.transition = 'opacity 0.5s';
+        messagesContainer.style.opacity = 1;
+        setTimeout(fadeOut, 5000);
+      }
+    }, 2000);
+  });
+</script>
+{% endif %} 

@@ -1,0 +1,522 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Why & What is CureClick{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/why.css' %}">
+
+</head>
+
+<body>
+    <main class="main">
+        <section class="hero-section">
+            <div class="hero-bg">
+                <img src="{% static 'images/why1.jpg' %}"
+                    alt="Healthcare Innovation">
+            </div>
+            <div class="bg-effects">
+                <div class="bg-blob-1"></div>
+                <div class="bg-blob-2"></div>
+            </div>
+
+            <div class="content-wrapper">
+                <div>
+                    <div class="badge-container">
+                        <div class="badge-bg"></div>
+                        <div class="badge">
+                            <span class="badge-text">Revolutionizing Healthcare</span>
+                        </div>
+                    </div>
+
+                    <h1 class="heading">
+                        The 
+                        <span class="highlight">
+                            Apropos
+                            <div class="highlight-decoration"></div>
+                        </span>
+                        of CureClick
+                    </h1>
+
+                    <p class="description" style="font-weight: 500;">
+                        Experience healthcare reimagined through the perfect blend of
+                        cutting-edge technology and compassionate human touch. Your
+                        wellness journey begins with a single click.
+                    </p>
+
+                    <div class="buttons">
+                        <button class="primary-button">
+                            <span>Get Started Now</span>
+                            <i class="ri-arrow-right-line"></i>
+                        </button>
+                    </div>
+
+                    <div class="social-proof">
+                        <div class="avatars">
+                            <img src="{% static 'images/why2.jpg' %}"
+                                class="avatar" alt="User">
+                            <img src="{% static 'images/why3.jpg' %}"
+                                class="avatar" alt="User">
+                            <img src="{% static 'images/why4.jpg' %}"
+                                class="avatar" alt="User">
+                        </div>
+                        <div>
+                            <div class="rating">
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <span style="font-weight: bold;">4.9/5</span>
+                            </div>
+                            <p class="review-count" style="font-weight: bold;">From over 50,000+ happy patients</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features-card-container">
+                    <div class="card-glow"></div>
+                    <div class="features-card">
+                        <div class="features-grid">
+                            <div class="feature">
+                                <div class="feature-icon">
+                                    <i class="ri-heart-pulse-line"></i>
+                                </div>
+                                <h3 class="feature-title">Health Monitoring</h3>
+                                <p class="feature-description">
+                                    Real-time tracking of vital signs
+                                </p>
+                            </div>
+
+                            <div class="feature">
+                                <div class="feature-icon">
+                                    <i class="ri-calendar-check-line"></i>
+                                </div>
+                                <h3 class="feature-title">Easy Scheduling</h3>
+                                <p class="feature-description">
+                                    Book appointments instantly
+                                </p>
+                            </div>
+
+                            <div class="feature">
+                                <div class="feature-icon">
+                                    <i class="ri-message-3-line"></i>
+                                </div>
+                                <h3 class="feature-title">24/7 Support</h3>
+                                <p class="feature-description">
+                                    Always here when you need us
+                                </p>
+                            </div>
+
+                            <div class="feature">
+                                <div class="feature-icon">
+                                    <i class="ri-shield-check-line"></i>
+                                </div>
+                                <h3 class="feature-title">Secure Data</h3>
+                                <p class="feature-description">
+                                    Your privacy is our priority
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <section class="about-section">
+        <div class="container">
+            <div class="grid">
+                <div class="story-container">
+                    <div class="circle-top-left"></div>
+                    <div class="circle-bottom-right"></div>
+                    <div class="story-card">
+                        <h2 class="story-heading">
+                            <span class="story-icon">
+                                <i class="ri-heart-pulse-line"></i>
+                            </span>
+                            Our Story
+                        </h2>
+                        <p class="story-text">
+                            Founded in 2025, CureClick emerged from a vision to
+                            revolutionize healthcare accessibility. We recognized the
+                            challenges patients faced in scheduling medical appointments
+                            and accessing quality healthcare services.
+                        </p>
+                        <p class="story-text">
+                            Our platform bridges the gap between patients and healthcare
+                            providers, offering a seamless booking experience while
+                            maintaining the highest standards of medical care. Today, we
+                            serve thousands of patients across multiple locations,
+                            connecting them with qualified healthcare professionals.
+                        </p>
+                        <p class="story-text">
+                            We continue to innovate and expand our services, always
+                            keeping our core mission in focus: making quality healthcare
+                            accessible to everyone.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="image-container">
+                    <div class="gradient-overlay-1"></div>
+                    <div class="gradient-overlay-2"></div>
+                    <img src="{% static 'images/why5.jpg' %}"
+                        class="team-image" alt="Our team">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="core-values-section">
+        <div class="circle-bg-1"></div>
+        <div class="circle-bg-2"></div>
+        <div class="container">
+            <h2 class="section-title">Our Core Values</h2>
+            <p class="section-description">
+                The foundational principles that shape our approach to healthcare and guide every interaction
+            </p>
+            <div class="values-grid">
+                <!-- Value Card 1 -->
+                <div class="value-card">
+                    <div class="icon-container">
+                        <div class="icon-bg">
+                            <i class="ri-heart-pulse-line icon"></i>
+                        </div>
+                        <div class="decoration-square"></div>
+                    </div>
+                    <h3 class="value-title">Human-Centered Care</h3>
+                    <p class="value-description">
+                        Every patient is unique. We provide personalized care that considers not just the medical needs,
+                        but the emotional and social aspects of health.
+                    </p>
+                    <a href="#" class="learn-more">
+                        <span class="learn-more-text">Learn More</span>
+                        <i class="ri-arrow-right-line learn-more-icon"></i>
+                    </a>
+                </div>
+
+                <!-- Value Card 2 -->
+                <div class="value-card">
+                    <div class="icon-container">
+                        <div class="icon-bg">
+                            <i class="ri-shield-check-line icon"></i>
+                        </div>
+                        <div class="decoration-square"></div>
+                    </div>
+                    <h3 class="value-title">Unwavering Excellence</h3>
+                    <p class="value-description">
+                        We set the highest standards in healthcare, continuously evolving our practices to deliver
+                        exceptional medical services.
+                    </p>
+                    <a href="#" class="learn-more">
+                        <span class="learn-more-text">Learn More</span>
+                        <i class="ri-arrow-right-line learn-more-icon"></i>
+                    </a>
+                </div>
+
+                <!-- Value Card 3 -->
+                <div class="value-card">
+                    <div class="icon-container">
+                        <div class="icon-bg">
+                            <i class="ri-microscope-line icon"></i>
+                        </div>
+                        <div class="decoration-square"></div>
+                    </div>
+                    <h3 class="value-title">Innovative Spirit</h3>
+                    <p class="value-description">
+                        We harness cutting-edge technology and research to pioneer new solutions in healthcare delivery
+                        and patient experience.
+                    </p>
+                    <a href="#" class="learn-more">
+                        <span class="learn-more-text">Learn More</span>
+                        <i class="ri-arrow-right-line learn-more-icon"></i>
+                    </a>
+                </div>
+
+                <!-- Value Card 4 -->
+                <div class="value-card">
+                    <div class="icon-container">
+                        <div class="icon-bg">
+                            <i class="ri-team-line icon"></i>
+                        </div>
+                        <div class="decoration-square"></div>
+                    </div>
+                    <h3 class="value-title">Collaborative Growth</h3>
+                    <p class="value-description">
+                        We foster partnerships with patients, healthcare providers, and communities to create a
+                        stronger, more connected healthcare ecosystem.
+                    </p>
+                    <a href="#" class="learn-more">
+                        <span class="learn-more-text">Learn More</span>
+                        <i class="ri-arrow-right-line learn-more-icon"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="leadership-section">
+        <div class="background-pattern"></div>
+        <div class="container">
+            <h2 class="section-title">Our Leadership Team</h2>
+            <p class="section-description">
+                Meet the visionaries driving innovation in healthcare delivery
+            </p>
+            <div class="team-grid">
+                <!-- Team Member 1 -->
+                <div class="team-card">
+                    <div class="image-container">
+                        <div class="image-overlay"></div>
+                        <img src="{% static 'images/team1.jpg' %}"
+                            class="team-image" alt="Dr. Sarah Mitchell" />
+                        <div class="quote-container">
+                            <p class="quote-text" style="font-size: 16px; font-weight: 400;">
+                                "Innovation in healthcare isn't just about technology – it's about creating meaningful
+                                connections and delivering care that truly matters."
+                            </p>
+                        </div>
+                    </div>
+                    <div class="info-container">
+                        <div class="icon-circle">
+                            <i class="ri-stethoscope-line icon"></i>
+                        </div>
+                        <h3 class="member-name">Dr. Sneha Joshi</h3>
+                        <p class="member-title">Chief Medical Officer</p>
+                        <p class="member-bio">
+                            Board Certified in Internal Medicine with over 15 years of experience in healthcare
+                            management and patient care. Pioneer in integrative medicine approaches.
+                        </p>
+                        <div class="tags-container">
+                            <span class="tag">Digital Health</span>
+                            <span class="tag">Patient Care</span>
+                        </div>
+                        <div class="social-links">
+                            <a href="#" class="social-link">
+                                <i class="ri-linkedin-fill social-icon"></i>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="ri-twitter-fill social-icon"></i>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="ri-global-line social-icon"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 2 -->
+                <div class="team-card">
+                    <div class="image-container">
+                        <div class="image-overlay"></div>
+                        <img src="{% static 'images/team2.jpg' %}"
+                            class="team-image" alt="Michael Thompson" />
+                        <div class="quote-container">
+                            <p class="quote-text" style="font-size: 16px; font-weight: 400;">
+                                "Our mission is to revolutionize healthcare accessibility while maintaining the human
+                                touch that makes medicine meaningful."
+                            </p>
+                        </div>
+                    </div>
+                    <div class="info-container">
+                        <div class="icon-circle">
+                            <i class="ri-line-chart-line icon"></i>
+                        </div>
+                        <h3 class="member-name">Aaryan Rao</h3>
+                        <p class="member-title">Chief Executive Officer</p>
+                        <p class="member-bio">
+                            Former healthcare consultant with extensive experience in digital health transformation and
+                            organizational leadership. Harvard Business School alumni.
+                        </p>
+                        <div class="tags-container">
+                            <span class="tag">Strategy</span>
+                            <span class="tag">Innovation</span>
+                        </div>
+                        <div class="social-links">
+                            <a href="#" class="social-link">
+                                <i class="ri-linkedin-fill social-icon"></i>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="ri-twitter-fill social-icon"></i>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="ri-global-line social-icon"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 3 -->
+                <div class="team-card">
+                    <div class="image-container">
+                        <div class="image-overlay"></div>
+                        <img src="{% static 'images/team3.jpg' %}"
+                            class="team-image" alt="Emily Chen" />
+                        <div class="quote-container">
+                            <p class="quote-text" style="font-size: 16px; font-weight: 400;">
+                                "Technology should enhance the human experience in healthcare, not replace it. We're
+                                building bridges between innovation and compassion."
+                            </p>
+                        </div>
+                    </div>
+                    <div class="info-container">
+                        <div class="icon-circle">
+                            <i class="ri-code-box-line icon"></i>
+                        </div>
+                        <h3 class="member-name">Ruhi Sharma</h3>
+                        <p class="member-title">Chief Technology Officer</p>
+                        <p class="member-bio">
+                            Tech innovator with a passion for creating user-friendly healthcare solutions. Former Senior
+                            Engineer at leading health tech companies.
+                        </p>
+                        <div class="tags-container">
+                            <span class="tag">AI/ML</span>
+                            <span class="tag">UX Design</span>
+                        </div>
+                        <div class="social-links">
+                            <a href="#" class="social-link">
+                                <i class="ri-linkedin-fill social-icon"></i>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="ri-twitter-fill social-icon"></i>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="ri-global-line social-icon"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="partners-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Partners & Certifications</h2>
+            </div>
+            <p class="section-description">
+                Collaborating with leading healthcare institutions and maintaining
+                the highest standards of medical excellence
+            </p>
+
+            <div class="certification-grid">
+                <!-- Card 1 -->
+                <div class="certification-card-wrapper">
+                    <div class="certification-card-background"></div>
+                    <div class="certification-card">
+                        <div class="card-content">
+                            <div class="icon-wrapper">
+                                <i class="ri-hospital-fill"></i>
+                            </div>
+                            <h3 class="card-title">Joint Commission</h3>
+                            <p class="card-description">
+                                Accredited Healthcare Organization
+                            </p>
+                            <div>
+                                <span class="badge badge-green">Certified 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="certification-card-wrapper">
+                    <div class="certification-card-background"></div>
+                    <div class="certification-card">
+                        <div class="card-content">
+                            <div class="icon-wrapper">
+                                <i class="ri-shield-star-fill"></i>
+                            </div>
+                            <h3 class="card-title">HIMSS</h3>
+                            <p class="card-description">
+                                Stage 7 Digital Certification
+                            </p>
+                            <div>
+                                <span class="badge badge-blue">Level 7 Achieved</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="certification-card-wrapper">
+                    <div class="certification-card-background"></div>
+                    <div class="certification-card">
+                        <div class="card-content">
+                            <div class="icon-wrapper">
+                                <i class="ri-award-fill"></i>
+                            </div>
+                            <h3 class="card-title">ISO 27001</h3>
+                            <p class="card-description">
+                                Information Security Certified
+                            </p>
+                            <div>
+                                <span class="badge badge-yellow">Security Verified</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="certification-card-wrapper">
+                    <div class="certification-card-background"></div>
+                    <div class="certification-card">
+                        <div class="card-content">
+                            <div class="icon-wrapper">
+                                <i class="ri-heart-pulse-fill"></i>
+                            </div>
+                            <h3 class="card-title">URAC</h3>
+                            <p class="card-description">
+                                Healthcare Quality Leader
+                            </p>
+                            <div>
+                                <span class="badge badge-purple">Excellence Award</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Partners logo section -->
+            <div class="partners-logo-grid">
+                <div class="partner-logo-wrapper">
+                    <img src="{% static 'images/logo1.jpg' %}" alt="Partner 1"
+                        class="partner-logo">
+                </div>
+                <div class="partner-logo-wrapper">
+                    <img src="{% static 'images/logo2.jpg' %}" alt="Partner 2"
+                        class="partner-logo">
+                </div>
+                <div class="partner-logo-wrapper">
+                    <img src="{% static 'images/logo3.jpg' %}" alt="Partner 3"
+                        class="partner-logo">
+                </div>
+                <div class="partner-logo-wrapper">
+                    <img src="{% static 'images/logo4.jpg' %}" alt="Partner 4"
+                        class="partner-logo">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% endblock %}
+
+    {% block scripts %}
+    <script src="{% static 'js/why.js' %}"></script>
+    {% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,470 @@
+/* CureClick Navbar - Modern Healthcare Design */
+  
+  /* Custom Properties */
+  :root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --accent-color: #1abc9c;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+    
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 180px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 999;
+    border-radius: 8px;
+    margin-top: 5px;
+}
+
+.dropdown-content a {
+    color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.dropdown-content a i {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+    border-radius: 8px;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 4px 0;
+}
+
+.cc-navbar__user:hover {
+    cursor: pointer;
+    opacity: 0.9;
+}
+
+.logout-btn {
+    color: #e74c3c !important;
+}
+
+
+  /* Navbar Container */
+  .cc-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    background-color: white;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  /* Logo Section */
+  .cc-navbar__brand {
+    display: flex;
+    align-items: center;
+  }
+  
+  .cc-navbar__logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  
+  .cc-navbar__logo img {
+    height: 2.5rem;
+    margin-right: 0.75rem;
+  }
+  
+  .cc-navbar__logo span {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #3498db;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Navigation Links */
+  .cc-navbar__links {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .cc-navbar__links li {
+    margin: 0 0.75rem;
+  }
+  
+  .cc-navbar__links a {
+    text-decoration: none;
+    color: var(--dark-color);
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    transition: var(--transition);
+    position: relative;
+  }
+  
+  .cc-navbar__links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: var(--transition);
+    transform: translateX(-50%);
+  }
+  
+  .cc-navbar__links a:hover {
+    color: var(--primary-color);
+  }
+  
+  .cc-navbar__links a:hover::after {
+    width: 80%;
+  }
+  
+  /* User Profile Section */
+  .cc-navbar__user {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--dark-color);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    transition: var(--transition);
+    background-color: var(--light-color);
+  }
+  
+  .cc-navbar__user:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+  }
+  
+  .cc-navbar__user-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background-color: #3498db;
+    color: white;
+    margin-right: 0.75rem;
+  }
+  
+  .cc-navbar__username {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  
+  /* Sign-in Button */
+  .cc-navbar__signin {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+  .cc-navbar__signin:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Mobile Menu Button */
+  .cc-navbar__menu-btn {
+    display: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--dark-color);
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 992px) {
+    .cc-navbar__menu-btn {
+      display: block;
+    }
+    
+    .cc-navbar__links {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: white;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 0;
+      box-shadow: var(--shadow);
+      transform: translateY(-150%);
+      transition: var(--transition);
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    .cc-navbar__links.active {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .cc-navbar__links li {
+      margin: 0.5rem 0;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .cc-navbar__links a {
+      display: block;
+      padding: 0.75rem;
+    }
+    
+    .cc-navbar__links a::after {
+      display: none;
+    }
+  }
+  
+  @media screen and (max-width: 576px) {
+    .cc-navbar__brand {
+      flex-grow: 1;
+    }
+    
+    .cc-navbar__user {
+      padding: 0.5rem;
+    }
+    
+    .cc-navbar__username {
+      display: none;
+    }
+    
+    .cc-navbar__signin {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* CureClick Footer - Beetroot Reddish Theme */
+
+/* Custom Footer Properties */
+:root {
+    --footer-primary: #580318;
+    --footer-secondary: #78041F;
+    --footer-dark: #3A0110;       /* Darker beetroot */
+    --footer-text: #f8f9fa;         /* Light text color */
+    --footer-light-text: #e2e2e2;   /* Slightly dimmer text */
+    --footer-accent: #FFC2D1;       /* Light accent color */
+    --footer-transition: all 0.3s ease;
+  }
+  
+  /* Footer Container */
+  .cc-footer {
+    background-color: var(--footer-primary);
+    color: var(--footer-text);
+    padding: 4rem 0 0;
+    position: relative;
+  }
+  
+  /* Main Footer Content Container */
+  .cc-footer__container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  
+  /* Footer Columns */
+  .cc-footer__col {
+    flex: 1;
+    min-width: 240px;
+    margin-bottom: 2rem;
+    padding-right: 2rem;
+  }
+  
+  /* Logo Section */
+  .cc-footer__logo {
+    margin-bottom: 1.5rem;
+  }
+  
+  .cc-footer__logo a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  
+  .cc-footer__logo img {
+    height: 2.5rem;
+    margin-right: 0.75rem;
+    filter: brightness(0) invert(1); /* Makes logo white */
+  }
+  
+  .cc-footer__logo span {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Footer Description Text */
+  .cc-footer__col p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--footer-light-text);
+    margin-bottom: 1.5rem;
+  }
+  
+  .cc-footer__col p i {
+    font-style: italic;
+    color: var(--footer-accent);
+  }
+  
+  /* Footer Heading */
+  .cc-footer__col h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 12px;
+  }
+  
+  .cc-footer__col h4::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 40px;
+    height: 3px;
+    background-color: var(--footer-accent);
+    border-radius: 30px;
+  }
+  
+  /* Footer Links */
+  .cc-footer__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .cc-footer__links li {
+    margin-bottom: 0.8rem;
+  }
+  
+  .cc-footer__links a {
+    color: var(--footer-light-text);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: var(--footer-transition);
+    display: inline-block;
+    position: relative;
+  }
+  
+  .cc-footer__links a:hover {
+    color: white;
+    transform: translateX(5px);
+  }
+  
+  .cc-footer__links a span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+    color: var(--footer-accent);
+  }
+  
+  /* Social Media Icons */
+  .cc-footer__socials {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .cc-footer__socials li {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .cc-footer__socials a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    text-decoration: none;
+    transition: var(--footer-transition);
+  }
+  
+  .cc-footer__socials a:hover {
+    background-color: var(--footer-accent);
+    color: var(--footer-dark);
+    transform: translateY(-3px);
+  }
+  
+  /* Copyright Bar */
+  .cc-footer__bar {
+    background-color: var(--footer-dark);
+    text-align: center;
+    padding: 1.5rem 1rem;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: var(--footer-light-text);
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 992px) {
+    .cc-footer__container {
+      flex-direction: column;
+    }
+    
+    .cc-footer__col {
+      width: 100%;
+      padding-right: 0;
+      margin-left: 0 !important; /* Override any inline margin */
+    }
+  }
+  
+  @media screen and (max-width: 576px) {
+    .cc-footer {
+      padding-top: 2.5rem;
+    }
+    
+    .cc-footer__container {
+      padding: 0 1rem;
+    }
+    
+    .cc-footer__socials li {
+      justify-content: center;
+    }
+  }

@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Booking Successful{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/confirm.css' %}">
+<style>
+    .success-message {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 550px;
+        width: 90%;
+        text-align: center;
+        position: relative;
+        margin: 0 auto;
+        transition: all 0.3s ease;
+    }
+    
+    .animate-success {
+        animation: popIn 0.5s forwards;
+    }
+    
+    @keyframes popIn {
+        0% { transform: scale(0.9); opacity: 0; }
+        70% { transform: scale(1.05); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .success-icon {
+        font-size: 60px;
+        color: #4CAF50;
+        margin-bottom: 20px;
+    }
+    
+    .booking-details {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: left;
+    }
+    
+    .booking-details h4 {
+        color: #555;
+        margin-bottom: 15px;
+        font-size: 18px;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 15px;
+    }
+    
+    .detail-row .label {
+        color: #777;
+        font-weight: 500;
+    }
+    
+    .detail-row .value {
+        color: #333;
+        font-weight: 600;
+        text-align: right;
+    }
+    
+    .buttons-row {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 25px;
+    }
+    
+    .action-btn {
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+    }
+    
+    .primary-btn {
+        background-color: #4361ee;
+        color: white;
+    }
+    
+    .primary-btn:hover {
+        background-color: #3a56d4;
+    }
+    
+    .secondary-btn {
+        background-color: #f0f0f0;
+        color: #555;
+    }
+    
+    .secondary-btn:hover {
+        background-color: #e4e4e4;
+    }
+    
+    .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 20px;
+        color: #999;
+        cursor: pointer;
+        background: none;
+        border: none;
+    }
+    
+    .success-header {
+        margin-bottom: 5px;
+    }
+    
+    .success-message p {
+        color: #666;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="success-message">
+        <i class="ri-checkbox-circle-fill success-icon"></i>
+        <h2 class="success-header">Booking Confirmed!</h2>
+        <p>Your appointment has been successfully scheduled.</p>
+        
+        <div class="booking-details">
+            <h4>Appointment Details</h4>
+            
+            <div class="detail-row">
+                <span class="label">Booking ID</span>
+                <span class="value">{{ booking.booking_id }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">Doctor</span>
+                <span class="value">Dr. {{ booking.doctor.user.first_name }} {{ booking.doctor.user.last_name }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">Service</span>
+                <span class="value">{{ booking.consultation_type.name }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">Date & Time</span>
+                <span class="value">{{ booking.booking_date|date:"d M Y" }} at {{ booking.booking_time }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">Patient</span>
+                <span class="value">{{ booking.full_name }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">Total Amount</span>
+                <span class="value">₹{{ booking.total_amount }}</span>
+            </div>
+        </div>
+        
+        <p>A confirmation email has been sent to your registered email address.</p>
+        
+        <div class="buttons-row">
+            <button id="download-invoice-btn" class="action-btn secondary-btn">
+                <i class="ri-file-download-line"></i> Download Invoice
+            </button>
+            <button id="view-booking-btn" class="action-btn primary-btn">
+                <i class="ri-calendar-check-line"></i> View Booking
+            </button>
+        </div>
+        
+        <button class="close-btn">
+            <i class="ri-close-line"></i>
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/confirm.js' %}"></script>
+{% endblock %} 

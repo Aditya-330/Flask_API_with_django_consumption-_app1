@@ -1,0 +1,562 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Confirm Your Appointment{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/confirm.css' %}">
+    <style>
+        /* Message styling removed to prevent duplicates */
+        
+        .center-card-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 20px;
+        }
+        
+        .confirmation-card {
+            background: white;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .confirmation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+        }
+        
+        .confirmation-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .confirmation-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .confirmation-row.total {
+            border-bottom: none;
+            font-weight: 600;
+            margin-top: 10px;
+            color: #333;
+        }
+        
+        .confirmation-label {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .confirmation-value {
+            color: #333;
+            font-weight: 500;
+            text-align: right;
+        }
+        
+        .confirmation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+        
+        .btn-complete {
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn-complete:hover {
+            box-shadow: 0 4px 12px rgba(87, 181, 231, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-cancel {
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        .btn-cancel:hover {
+            background: #ebebeb;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container {% if confirmation_prompt or success %}success-active{% endif %}">
+        <div class="header">
+            <div class="header-content">
+                <h1 class="header-title">
+                    Book Your Appointment
+                </h1>
+                <p class="header-subtitle">Choose your preferred date and time</p>
+            </div>
+        </div>
+        <div class="content-grid">
+            <div class="content-main">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            Select Date & Time
+                        </h2>
+                        <div class="month-nav">
+                            <button class="month-button" id="prev-month">
+                                <i class="ri-arrow-left-s-line"></i>
+                            </button>
+                            <span class="month-text" id="currentMonth"></span>
+                            <button class="month-button" id="next-month">
+                                <i class="ri-arrow-right-s-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="calendar-header">
+                        <div class="calendar-header-day">Sun</div>
+                        <div class="calendar-header-day">Mon</div>
+                        <div class="calendar-header-day">Tue</div>
+                        <div class="calendar-header-day">Wed</div>
+                        <div class="calendar-header-day">Thu</div>
+                        <div class="calendar-header-day">Fri</div>
+                        <div class="calendar-header-day">Sat</div>
+                    </div>
+                    <div class="calendar-grid" id="calendar"></div>
+                    <div class="time-slots-section">
+                        <h3 class="time-slots-title">
+                            Available Time Slots
+                        </h3>
+                        <div class="time-slots-grid" id="timeSlots">
+                            <!-- Morning Time Slots -->
+                            <div class="time-slots-column">
+                                <h4 class="time-slots-header">Morning</h4>
+                                <div class="time-slots-list" id="morningSlots">
+                                    {% if morning_slots %}
+                                        {% for slot in morning_slots %}
+                                            <div class="time-slot clickable-slot" data-time="{{ slot.start_time|time:'H:i' }} - {{ slot.end_time|time:'H:i' }}">
+                                                {{ slot.start_time|time:'H:i' }} - {{ slot.end_time|time:'H:i' }}
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="no-slots">No morning slots available</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        
+                            <!-- Afternoon Time Slots -->
+                            <div class="time-slots-column">
+                                <h4 class="time-slots-header">Afternoon</h4>
+                                <div class="time-slots-list" id="afternoonSlots">
+                                    {% if afternoon_slots %}
+                                        {% for slot in afternoon_slots %}
+                                            <div class="time-slot clickable-slot" data-time="{{ slot.start_time|time:'H:i' }} - {{ slot.end_time|time:'H:i' }}">
+                                                {{ slot.start_time|time:'H:i' }} - {{ slot.end_time|time:'H:i' }}
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="no-slots">No afternoon slots available</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        
+                            <!-- Evening Time Slots -->
+                            <div class="time-slots-column">
+                                <h4 class="time-slots-header">Evening</h4>
+                                <div class="time-slots-list" id="eveningSlots">
+                                    {% if evening_slots %}
+                                        {% for slot in evening_slots %}
+                                            <div class="time-slot clickable-slot" data-time="{{ slot.start_time|time:'H:i' }} - {{ slot.end_time|time:'H:i' }}">
+                                                {{ slot.start_time|time:'H:i' }} - {{ slot.end_time|time:'H:i' }}
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="no-slots">No evening slots available</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Doctor list moved inside the content-main section, right after the calendar card -->
+                <div class="space-y-4">
+                    <h2 class="card-title" style="margin-top: 0.5rem; margin-bottom: 0.5rem;">Select a Doctor</h2>
+                    {% for doctor in doctors %}
+                    <div class="doctor-card"
+                        data-doctor-id="{{ doctor.id }}" data-doctor-name="{{ doctor.name }}" data-fee="{{ doctor.consultation_fee }}">
+                        <img src="{{ doctor.photo_url }}" alt="Dr. {{ doctor.name }}" class="w-24 h-24 rounded-full object-cover" />
+                        <div class="flex-1">
+                            <h3 class="text-xl font-semibold text-gray-900">Dr. {{ doctor.name }}</h3>
+                            <p class="text-gray-600">{{ doctor.consultation_type }} • {{ doctor.experience }} years experience</p>
+                            <p class="text-gray-600 mt-1">{{ doctor.clinic }}, {{ doctor.city }}</p>
+                            <span class="consultation-fee">Consultation: ₹{{ doctor.consultation_fee }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    
+        {% if confirmation_prompt or success %}
+        <!-- No outer form needed for confirmation prompt or success screens -->
+        <div class="container">
+            {% if confirmation_prompt %}
+            <div class="confirmation-page">
+                <h1 class="confirmation-title">Confirm Your Booking</h1>
+                
+                <div class="confirmation-details">
+                    <div class="confirmation-row">
+                        <div class="confirmation-label">Doctor:</div>
+                        <div class="confirmation-value">Dr. {{ doctor.name }}</div>
+                    </div>
+                    <div class="confirmation-row">
+                        <div class="confirmation-label">Service:</div>
+                        <div class="confirmation-value">{{ consultation_type.name }}</div>
+                    </div>
+                    <div class="confirmation-row">
+                        <div class="confirmation-label">Date:</div>
+                        <div class="confirmation-value">{{ selected_date }}</div>
+                    </div>
+                    <div class="confirmation-row">
+                        <div class="confirmation-label">Time:</div>
+                        <div class="confirmation-value">{{ selected_time }}</div>
+                    </div>
+                    <div class="confirmation-row">
+                        <div class="confirmation-label">Consultation Fee:</div>
+                        <div class="confirmation-value">₹{{ consultation_fee }}</div>
+                    </div>
+                    <div class="confirmation-row">
+                        <div class="confirmation-label">Platform Fee:</div>
+                        <div class="confirmation-value">₹{{ platform_fee }}</div>
+                    </div>
+                    <div class="confirmation-divider"></div>
+                    <div class="confirmation-row total">
+                        <div class="confirmation-label">Total Amount:</div>
+                        <div class="confirmation-value">₹{{ total_amount }}</div>
+                    </div>
+                </div>
+                
+                <form method="POST" action="{% url 'confirm' %}" id="final-confirm-form">
+                    {% csrf_token %}
+                    <!-- Hidden fields to pass all necessary data -->
+                    <input type="hidden" name="full_name" value="{{ full_name }}">
+                    <input type="hidden" name="service_id" value="{{ consultation_type.id }}">
+                    <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+                    <input type="hidden" name="selected_date" value="{{ selected_date }}">
+                    <input type="hidden" name="selected_time" value="{{ selected_time }}">
+                    <input type="hidden" name="gender" value="{{ gender }}">
+                    <input type="hidden" name="age" value="{{ age }}">
+                    <input type="hidden" name="form_action" value="final_confirm_booking">
+                    
+                    <div class="confirmation-buttons">
+                        <button type="submit" class="btn-complete" id="complete-booking-btn">Complete Booking</button>
+                        <a href="{% url 'confirm' %}?service_id={{ consultation_type.id }}" class="btn-cancel">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        
+            {% elif success %}
+            <div class="confirmation-card">
+                <div class="success-icon">
+                    <i class="ri-check-line"></i>
+                </div>
+                <h3 class="confirmation-title">Booking Confirmed!</h3>
+                
+                <div class="confirmation-details">
+                    <div class="confirmation-row">
+                        <div class="confirmation-label">Doctor:</div>
+                        <div class="confirmation-value">Dr. {{ booking.doctor.name }}</div>
+                    </div>
+                    <div class="confirmation-row">
+                        <div class="confirmation-label">Service:</div>
+                        <div class="confirmation-value">{{ booking.consultation_type.name }}</div>
+                    </div>
+                    <div class="confirmation-row">
+                        <div class="confirmation-label">Date:</div>
+                        <div class="confirmation-value">{{ booking.selected_date }}</div>
+                    </div>
+                    <div class="confirmation-row">
+                        <div class="confirmation-label">Time:</div>
+                        <div class="confirmation-value">{{ booking.selected_time }}</div>
+                    </div>
+                    <div class="confirmation-row">
+                        <div class="confirmation-label">Total Fee:</div>
+                        <div class="confirmation-value">₹{{ booking.total_amount }}</div>
+                    </div>
+                    <!-- <div class="confirmation-row">
+                        <div class="confirmation-label">Patient:</div>
+                        <div class="confirmation-value" style="color: black;">{{ booking.full_name }}</div>
+                    </div> -->
+                    <div class=""confirmation-row">
+                    <p class="confirmation-label" style="color: red;">*You need to pay at clinic.</p>
+                    </div>
+                </div>
+                
+                <div class="confirmation-buttons">
+                    <a href="{% url 'book' %}" class="btn-complete">Book Another</a>
+                    <a href="{% url 'myApp' %}" class="btn-cancel">View My Appointments</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <!-- Main booking form only displayed if not in confirmation or success states -->
+        <form method="POST" id="booking-form" action="{% url 'confirm' %}">
+            {% csrf_token %}
+            
+            <!-- Service Information Banner - Added at the top -->
+            <div class="service-info-banner">
+                <div class="service-info-content">
+                    <h3>{{ consultation.name }}</h3>
+                    <p>Platform Fee: ₹{{ platform_fee }}</p>
+                </div>
+            </div>
+            
+            <div class="booking-summary-container">
+                <div class="booking-container">
+                    <div class="check-line"></div>
+                    <div class="booking-summary">
+                        <h2>{% if reschedule_mode %}Reschedule Appointment{% else %}Booking Summary{% endif %}</h2>
+                        <div class="booking-details">
+                            <div class="booking-item">
+                                <span class="booking-label">Doctor</span>
+                                <p class="booking-value" id="selectedDoctor">Please select a doctor</p>
+                                <input type="hidden" id="doctor_id" name="doctor_id">
+                            </div>
+                            <div class="booking-item">
+                                <span class="booking-label">Service Type</span>
+                                <p class="booking-value" id="selectedServiceType">{{ consultation.name }}</p>
+                                <input type="hidden" id="service_id" name="service_id" value="{{ consultation.id }}">
+                            </div>
+                            <div class="booking-item">
+                                <span class="booking-label">Patient Name</span>
+                                <p class="booking-value" id="patientName">{{ full_name }}</p>
+                                <input type="hidden" id="full_name" name="full_name" value="{{ full_name }}">
+                                <!-- Add hidden fields for gender and age -->
+                                <input type="hidden" name="gender" value="{{ gender }}">
+                                <input type="hidden" name="age" value="{{ age }}">
+                            </div>
+                            <div class="booking-item">
+                                <span class="booking-label">Selected Date</span>
+                                <p class="booking-value" id="selectedDate">Please select a date</p>
+                                <input type="hidden" id="selected_date" name="selected_date">
+                            </div>
+                            <div class="booking-item">
+                                <span class="booking-label">Selected Time</span>
+                                <p class="booking-value" id="selectedTime">Please select a time slot</p>
+                                <input type="hidden" id="selected_time" name="selected_time">
+                            </div>
+                            <div class="divider">
+                                <div class="flex-row">
+                                    <span class="fee-label">Consultation Fee</span>
+                                    <span class="fee-label" id="consultationFee">₹0</span>
+                                </div>
+                                <div class="flex-row" style="margin-top: 0.5rem;">
+                                    <span class="platform-fee-label">Platform Fee</span>
+                                    <span class="platform-fee-label" id="platformFee">₹{{ platform_fee }}</span>
+                                </div>
+                                <div class="flex-row divider">
+                                    <span class="total-label">Total to Pay</span>
+                                    <span class="total-label" id="totalAmount">₹{{ platform_fee }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% if reschedule_mode %}
+                        <input type="hidden" name="reschedule_id" value="{{ reschedule_data.booking_id }}">
+                        {% endif %}
+                        <input type="hidden" id="form_action" name="form_action" value="confirm_booking_prompt">
+                        <button type="submit" class="confirm-button" id="confirm-booking">
+                            <span class="button-content">
+                                {% if reschedule_mode %}Confirm Reschedule{% else %}Confirm Booking{% endif %}
+                                <i class="ri-arrow-right-line button-icon"></i>
+                            </span>
+                        </button>
+                        <a href="{% url 'book' %}" class="cancel-button">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+        {% endif %}
+    
+        <!-- <div id="errorToast" class="hidden fixed top-4 right-4 bg-red-500 text-white p-4 rounded shadow-lg">
+            <p id="errorMessage"></p>
+        </div> -->
+    </div>
+
+    {% endblock %}
+
+    {% block scripts %}
+    <script src="{% static 'js/confirm.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const clickableSlots = document.querySelectorAll(".clickable-slot");
+            clickableSlots.forEach((slot) => {
+                slot.addEventListener("click", function() {
+                    // Remove selected class from all slots
+                    document.querySelectorAll(".clickable-slot").forEach((s) => 
+                        s.classList.remove("selected")
+                    );
+                    
+                    // Add selected class to this slot
+                    this.classList.add("selected");
+                    
+                    // Update the selected time in the summary and hidden input
+                    const selectedTime = this.dataset.time;
+                    document.getElementById("selectedTime").textContent = selectedTime;
+                    document.getElementById("selected_time").value = selectedTime;
+                });
+            });
+            
+            // Add form submission debugging and validation
+            const bookingForm = document.getElementById('booking-form');
+            if (bookingForm) {
+                bookingForm.addEventListener('submit', function(e) {
+                    // Get all form values before submission
+                    const serviceId = document.getElementById('service_id').value;
+                    const doctorId = document.getElementById('doctor_id').value;
+                    const selectedDate = document.getElementById('selected_date').value;
+                    const selectedTime = document.getElementById('selected_time').value;
+                    
+                    console.log('Form submission values:');
+                    console.log('Service ID:', serviceId);
+                    console.log('Doctor ID:', doctorId);
+                    console.log('Selected Date:', selectedDate);
+                    console.log('Selected Time:', selectedTime);
+                    
+                    // Validate required fields
+                    if (!serviceId) {
+                        e.preventDefault();
+                        alert('Service type is required. Please go back to the booking page and select a service.');
+                        return false;
+                    }
+                    
+                    if (!doctorId) {
+                        e.preventDefault();
+                        alert('Please select a doctor.');
+                        return false;
+                    }
+                    
+                    if (!selectedDate) {
+                        e.preventDefault();
+                        alert('Please select a date.');
+                        return false;
+                    }
+                    
+                    if (!selectedTime) {
+                        e.preventDefault();
+                        alert('Please select a time slot.');
+                        return false;
+                    }
+                });
+            }
+            
+            // Fix for the final confirm form submission
+            const finalConfirmForm = document.getElementById('final-confirm-form');
+            const completeBookingBtn = document.getElementById('complete-booking-btn');
+            
+            if (finalConfirmForm && completeBookingBtn) {
+                finalConfirmForm.addEventListener('submit', function(e) {
+                    // Prevent default form submission
+                    e.preventDefault();
+                    
+                    // Disable button to prevent multiple submissions
+                    completeBookingBtn.disabled = true;
+                    completeBookingBtn.textContent = "Processing...";
+                    
+                    // Create a FormData object
+                    const formData = new FormData(finalConfirmForm);
+                    
+                    // Ensure form_action is set correctly
+                    formData.set('form_action', 'final_confirm_booking');
+                    
+                    // Convert FormData to an object for debugging
+                    const formDataObj = {};
+                    formData.forEach((value, key) => {
+                        formDataObj[key] = value;
+                    });
+                    console.log("Submitting form with data:", formDataObj);
+                    
+                    // Submit form data traditionally to avoid cross-domain issues
+                    const tempForm = document.createElement('form');
+                    tempForm.method = 'POST';
+                    tempForm.action = '{% url "confirm" %}';
+                    tempForm.style.display = 'none';
+                    
+                    // Add CSRF token
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrfmiddlewaretoken';
+                    csrfInput.value = formData.get('csrfmiddlewaretoken');
+                    tempForm.appendChild(csrfInput);
+                    
+                    // Add all other form fields
+                    for (let [key, value] of formData.entries()) {
+                        if (key !== 'csrfmiddlewaretoken') {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = key;
+                            input.value = value;
+                            tempForm.appendChild(input);
+                        }
+                    }
+                    
+                    // Add the form to the body and submit it
+                    document.body.appendChild(tempForm);
+                    
+                    setTimeout(() => {
+                        try {
+                            tempForm.submit();
+                        } catch (error) {
+                            console.error("Error submitting form:", error);
+                            alert("There was an error processing your booking. Please try again.");
+                            completeBookingBtn.disabled = false;
+                            completeBookingBtn.textContent = "Complete Booking";
+                        }
+                    }, 100);
+                });
+            }
+        });
+    </script>
+    {% endblock %}
+    
+</body>
+</html>

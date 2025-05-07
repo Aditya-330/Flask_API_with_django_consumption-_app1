@@ -1,0 +1,476 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Patient Profile{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+</head>
+<body>
+    <main>
+        <div class="profile-header">
+            <div class="profile-header-content">
+                <div class="profile-details">
+                    <div class="profile-large-image">
+                        <div class="profile-icon">
+                            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                              <!-- Head -->
+                              <circle cx="50" cy="40" r="24" fill="black"/>
+                              <!-- Body -->
+                              <path d="M50,70 C30,70 20,85 20,100 L80,100 C80,85 70,70 50,70" fill="black"/>
+                            </svg>
+                          </div>
+                    </div>
+                    <div class="profile-info-large">
+                        <h1 class="profile-title">{{ user.userprofile.full_name|default:user.username }}</h1>
+                        <div class="profile-meta">
+                            {% if user.userprofile.date_of_birth %}
+                            <span>{{ user.userprofile.date_of_birth|timesince }} old</span>
+                            <span class="separator">•</span>
+                            {% endif %}
+                            <span>Member since {{ user.date_joined|date:"Y" }}</span>
+                        </div>
+                        <div class="profile-badges">
+                            <span class="badge badge-green">
+                                <div class="badge-icon">
+                                    <i class="ri-checkbox-circle-fill"></i>
+                                </div>
+                                CureClick Verified
+                            </span>
+                            <span class="badge badge-blue">
+                                <div class="badge-icon">
+                                    <i class="ri-shield-check-fill"></i>
+                                </div>
+                                Complete Profile
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn btn-secondary" id="openEditProfileBtn">
+                        <div class="btn-icon">
+                            <i class="ri-edit-line"></i>
+                        </div>
+                        Edit Profile
+                    </button>
+                    <a href="{% url 'myApp' %}">
+                    <button class="btn btn-primary">
+                        <div class="btn-icon">
+                            <i class="ri-calendar-line"></i>
+                        </div>
+                        My Appointments
+                    </button>
+                    </a>
+                    <a href="{% url 'pharmacy:orders' %}" style="text-decoration: none; color: black;">
+                    <button class="btn btn-primary" style="height: 40px;">
+                        <div class="btn-icon">
+                            
+                        </div>
+                        My Orders
+                        <p style="font-size: 10px; margin-left: 10px;"></p>
+                    </a>
+                    </button>
+                </div>
+            </div>
+        </div>
+        </main>
+        
+        <div class="content-grid">
+            <!-- Main Content (2/3) -->
+            <div class="main-content" style="margin-top: 0px;">
+                <!-- Personal Information -->
+                <div class="info-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Personal Information</h2>
+                        <button class="edit-button" id="openEditProfileBtn2">
+                            <div class="button-icon">
+                                <i class="ri-edit-line"></i>
+                            </div>
+                            Edit
+                        </button>
+                    </div>
+                    <div class="info-grid">
+                        <div>
+                            <h3 class="section-title">Contact Information</h3>
+                            <div class="info-list">
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="ri-mail-line"></i>
+                                    </div>
+                                    <span class="info-text" style="margin-top: 6px;">{{ user.email }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="ri-phone-line"></i>
+                                    </div>
+                                    <span class="info-text" style="margin-top: 6px;">{{ user.userprofile.primary_phone|default:"Not provided" }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="ri-map-pin-line"></i>
+                                    </div>
+                                    <span class="info-text">
+                                        {{ user.userprofile.address_line1|default:"" }}
+                                        {% if user.userprofile.address_line2 %}<br>{{ user.userprofile.address_line2 }}{% endif %}
+                                        {% if user.userprofile.city %}<br>{{ user.userprofile.city }}, {{ user.userprofile.state }} {{ user.userprofile.pin_code }}{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="section-title">Our Top Medical Providers</h3>
+                            <div class="info-list">
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="ri-user-heart-line"></i>
+                                    </div>
+                                    <div>
+                                        <span class="provider-name">Dr. Mohit Raina</span>
+                                        <p class="provider-role">Primary Care Physician</p>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="ri-heart-pulse-line"></i>
+                                    </div>
+                                    <div>
+                                        <span class="provider-name">Dr. Meher Kaur</span>
+                                        <p class="provider-role">Cardiologist</p>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="ri-mental-health-line"></i>
+                                    </div>
+                                    <div>
+                                        <span class="provider-name">Dr. Jay Oberoi</span>
+                                        <p class="provider-role">Therapist</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <!-- Upcoming Appointments -->
+                <div class="appointments-card">
+                    <div class="appointments-header">
+                        <h2 class="appointments-title">Healthcare Tips</h2>
+                    </div>
+                    <div class="appointments-list">
+                        <div class="appointment-item today">
+                            <div class="appointment-icon blue">
+                                <div class="icon-container">
+                                    <i class="ri-heart-line"></i>
+                                </div>
+                            </div>
+                            <div class="appointment-details">
+                                <div class="appointment-doctor">
+                                    <span class="doctor-name">Cardiovascular Health</span>
+                                    <span class="today-badge">Important</span>
+                                </div>
+                                <p class="appointment-type">30 Minutes of Daily Exercise</p>
+                                <p class="appointment-time">Reduces heart disease risk by up to 30%</p>
+                            </div>
+                        </div>
+                        <div class="appointment-item">
+                            <div class="appointment-icon purple">
+                                <div class="icon-container">
+                                    <i class="ri-mental-health-line"></i>
+                                </div>
+                            </div>
+                            <div class="appointment-details">
+                                <div class="appointment-doctor">
+                                    <span class="doctor-name">Mental Wellness</span>
+                                </div>
+                                <p class="appointment-type">Daily Mindfulness Practice</p>
+                                <p class="appointment-time">5-10 minutes • Morning & Evening</p>
+                            </div>
+                        </div>
+                        <div class="appointment-item">
+                            <div class="appointment-icon red">
+                                <div class="icon-container">
+                                    <i class="ri-rest-time-line"></i>
+                                </div>
+                            </div>
+                            <div class="appointment-details">
+                                <div class="appointment-doctor">
+                                    <span class="doctor-name">Sleep Hygiene</span>
+                                </div>
+                                <p class="appointment-type">Consistent Sleep Schedule</p>
+                                <p class="appointment-time">7-9 hours • 10:00 PM - 6:00 AM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="emergency-contacts" style="width: 920px;">
+                <div class="header">
+                    <h2>Emergency Contact</h2>
+                    <p style="margin-left: -420px; margin-top: 19px;">( Only 1 per User )</p>
+                    <button class="add-button" id="openEditProfileBtn">
+                        <div class="icon">
+                            <i class="ri-user-add-line"></i>
+                        </div>
+                        Add
+                    </button>
+                </div>
+                <div class="contacts-list">
+                    {% if user.userprofile.emergency_contact_name %}
+                    <div class="contact-card">
+                        <div class="avatar">
+                            <div class="avatar-icon">
+                                <i class="ri-user-3-line"></i>
+                            </div>
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-header">
+                                <span class="contact-name">{{ user.userprofile.emergency_contact_name }}</span>
+                                <button class="more-options edit-button">
+                                    <div class="icon">
+                                        <i class="ri-more-2-fill"></i>
+                                    </div>
+                                </button>
+                            </div>
+                            <p class="contact-relation">{{ user.userprofile.get_emergency_contact_relationship_display }}</p>
+                            <div class="contact-details">
+                                <div class="detail">
+                                    <div class="detail-icon">
+                                        <i class="ri-phone-line"></i>
+                                    </div>
+                                    <span class="detail-text">{{ user.userprofile.emergency_contact_phone }}</span>
+                                </div>
+                                <div class="detail">
+                                    <div class="detail-icon">
+                                        <i class="ri-mail-line"></i>
+                                    </div>
+                                    <span class="detail-text">{{ user.userprofile.emergency_contact_email }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="no-contacts">
+                        <p>No emergency contacts added yet. Click "Add" to create one.</p>
+                        <button class="add-emergency-contact-btn edit-button">Add Emergency Contact</button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Contact Support Section -->
+            <div class="contact-support" style="margin-top: -200px; width: 450px; margin-left: 970px;">
+                <div class="header">
+                    <h2>Contact Support & Quick Actions</h2>
+                </div>
+                <div class="support-options">
+                    
+                    <button class="support-button">
+                        <div class="button-icon">
+                            <i class="ri-calendar-line"></i>
+                        </div>
+                        <span>Schedule Appointment</span>
+                    </button>
+                    <button class="support-button">
+                        <div class="button-icon">
+                            <i class="ri-phone-line"></i>
+                        </div>
+                        <span>24/7 Helpline</span>
+                    </button>
+                    <button class="support-button">
+                        <div class="button-icon">
+                            <i class="ri-video-chat-line"></i>
+                        </div>
+                        <span>Order Medicines</span>
+                    </button>
+                    <a href="mailto:cureclick1@gmail.com" style="text-decoration: none;">
+                        <button id="emailContactBtn" class="support-button full-width" style="width: 200px;">
+                        <div class="button-icon">
+                            <i class="ri-mail-send-line"></i>
+                        </div>
+                        <span>Email Support</span>
+                    </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    
+        <div class="profile-edit__modal-overlay" id="editProfileModal">
+            <div class="profile-edit__modal-container">
+                <div class="profile-edit__modal-header">
+                    <h2 class="profile-edit__title">Edit Profile</h2>
+                    <button class="profile-edit__close-button" id="closeEditProfileModal">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="profile-edit__modal-body">
+                    <form id="profileEditForm" method="post" action="{% url 'profile' %}" class="profile-edit__form">
+                        {% csrf_token %}
+                        
+                        <div class="profile-edit__section">
+                            <h3 class="profile-edit__section-title">Personal Information</h3>
+                            <div class="profile-edit__form-group">
+                                <label for="full_name" class="profile-edit__label">Full Name</label>
+                                <input type="text" id="full_name" name="full_name" value="{{ user.userprofile.full_name }}" class="profile-edit__input">
+                            </div>
+                            
+                            <div class="profile-edit__form-group">
+                                <label for="email" class="profile-edit__label">Email Address</label>
+                                <input type="email" id="email" name="email" value="{{ user.userprofile.email|default:user.email }}" class="profile-edit__input">
+                            </div>
+                            
+                            <div class="profile-edit__form-row">
+                                <div class="profile-edit__form-group">
+                                    <label for="date_of_birth" class="profile-edit__label">Date of Birth</label>
+                                    <input type="date" id="date_of_birth" name="date_of_birth" value="{{ user.userprofile.date_of_birth|date:'Y-m-d' }}" class="profile-edit__input">
+                                </div>
+                                
+                                <div class="profile-edit__form-group">
+                                    <label for="age" class="profile-edit__label">Age</label>
+                                    <input type="number" id="age" name="age" value="{{ user.userprofile.age }}" min="0" max="120" class="profile-edit__input">
+                                </div>
+                            </div>
+                            
+                            <div class="profile-edit__form-row">
+                                <div class="profile-edit__form-group">
+                                    <label for="gender" class="profile-edit__label">Gender</label>
+                                    <select id="gender" name="gender" class="profile-edit__select">
+                                        <option value="">Select Gender</option>
+                                        <option value="male" {% if user.userprofile.gender == 'male' %}selected{% endif %}>Male</option>
+                                        <option value="female" {% if user.userprofile.gender == 'female' %}selected{% endif %}>Female</option>
+                                        <option value="other" {% if user.userprofile.gender == 'other' %}selected{% endif %}>Other</option>
+                                        <option value="prefer_not_to_say" {% if user.userprofile.gender == 'prefer_not_to_say' %}selected{% endif %}>Prefer not to say</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="profile-edit__form-group">
+                                    <label for="blood_type" class="profile-edit__label">Blood Type</label>
+                                    <select id="blood_type" name="blood_type" class="profile-edit__select">
+                                        <option value="">Select Blood Type</option>
+                                        <option value="A+" {% if user.userprofile.blood_type == 'A+' %}selected{% endif %}>A+</option>
+                                        <option value="A-" {% if user.userprofile.blood_type == 'A-' %}selected{% endif %}>A-</option>
+                                        <option value="B+" {% if user.userprofile.blood_type == 'B+' %}selected{% endif %}>B+</option>
+                                        <option value="B-" {% if user.userprofile.blood_type == 'B-' %}selected{% endif %}>B-</option>
+                                        <option value="AB+" {% if user.userprofile.blood_type == 'AB+' %}selected{% endif %}>AB+</option>
+                                        <option value="AB-" {% if user.userprofile.blood_type == 'AB-' %}selected{% endif %}>AB-</option>
+                                        <option value="O+" {% if user.userprofile.blood_type == 'O+' %}selected{% endif %}>O+</option>
+                                        <option value="O-" {% if user.userprofile.blood_type == 'O-' %}selected{% endif %}>O-</option>
+                                        <option value="unknown" {% if user.userprofile.blood_type == 'unknown' %}selected{% endif %}>Unknown</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-edit__section">
+                            <h3 class="profile-edit__section-title">Contact Information</h3>
+                            <div class="profile-edit__form-group">
+                                <label for="primary_phone" class="profile-edit__label">Phone Number</label>
+                                <input type="tel" id="primary_phone" name="primary_phone" value="{{ user.userprofile.primary_phone }}" class="profile-edit__input">
+                            </div>
+                            
+                            <div class="profile-edit__form-group">
+                                <label for="address_line1" class="profile-edit__label">Address Line 1</label>
+                                <input type="text" id="address_line1" name="address_line1" value="{{ user.userprofile.address_line1 }}" class="profile-edit__input">
+                            </div>
+                            
+                            <div class="profile-edit__form-row">
+                                <div class="profile-edit__form-group">
+                                    <label for="city" class="profile-edit__label">City</label>
+                                    <input type="text" id="city" name="city" value="{{ user.userprofile.city }}" class="profile-edit__input">
+                                </div>
+                                
+                                <div class="profile-edit__form-group">
+                                    <label for="state" class="profile-edit__label">State</label>
+                                    <input type="text" id="state" name="state" value="{{ user.userprofile.state }}" class="profile-edit__input">
+                                </div>
+                                
+                                <div class="profile-edit__form-group">
+                                    <label for="zip_code" class="profile-edit__label">Pin Code</label>
+                                    <input type="text" id="zip_code" name="zip_code" value="{{ user.userprofile.pin_code }}" class="profile-edit__input">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Emergency Contact Section -->
+                        <div class="profile-edit_section profile-edit_emergency-section">
+                            <h3 class="profile-edit_section-title profile-edit_emergency-title">
+                                <i class="ri-alert-line profile-edit__emergency-icon"></i>
+                                Emergency Contact
+                            </h3>
+                            <div class="profile-edit__emergency-description">
+                                Please provide contact details of someone we can reach in case of emergency
+                            </div>
+                            
+                            <div class="profile-edit__form-group">
+                                <label for="emergency_contact_name" class="profile-edit__label">Contact Name</label>
+                                <input type="text" id="emergency_contact_name" name="emergency_contact_name" 
+                                       value="{{ user.userprofile.emergency_contact_name }}" 
+                                       class="profile-edit_input profile-edit_emergency-input">
+                            </div>
+                            
+                            <div class="profile-edit__form-row">
+                                <div class="profile-edit__form-group">
+                                    <label for="emergency_contact_phone" class="profile-edit__label">Phone Number</label>
+                                    <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" 
+                                           value="{{ user.userprofile.emergency_contact_phone }}" 
+                                           class="profile-edit_input profile-edit_emergency-input">
+                                </div>
+                                
+                                <div class="profile-edit__form-group">
+                                    <label for="emergency_contact_email" class="profile-edit__label">Email Address</label>
+                                    <input type="email" id="emergency_contact_email" name="emergency_contact_email" 
+                                           value="{{ user.userprofile.emergency_contact_email }}" 
+                                           class="profile-edit_input profile-edit_emergency-input">
+                                </div>
+                            </div>
+                            
+                            <div class="profile-edit__form-group">
+                                <label for="emergency_contact_relationship" class="profile-edit__label">Relationship</label>
+                                <select id="emergency_contact_relationship" name="emergency_contact_relationship" 
+                                        class="profile-edit_select profile-edit_emergency-select">
+                                    <option value="">Select Relationship</option>
+                                    <option value="parent" {% if user.userprofile.emergency_contact_relationship == 'parent' %}selected{% endif %}>Parent</option>
+                                    <option value="spouse" {% if user.userprofile.emergency_contact_relationship == 'spouse' %}selected{% endif %}>Spouse</option>
+                                    <option value="sibling" {% if user.userprofile.emergency_contact_relationship == 'sibling' %}selected{% endif %}>Sibling</option>
+                                    <option value="relative" {% if user.userprofile.emergency_contact_relationship == 'relative' %}selected{% endif %}>Relative</option>
+                                    <option value="friend" {% if user.userprofile.emergency_contact_relationship == 'friend' %}selected{% endif %}>Friend</option>
+                                    <option value="other" {% if user.userprofile.emergency_contact_relationship == 'other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-edit__form-actions">
+                            <button type="button" style="padding: 8px 16px; background-color:rgb(215, 145, 145); border: 1px solid #ccc; border-radius: 4px; color: #333; font-size: 14px; cursor: pointer; margin-right: 10px;" id="cancelEditProfile">Cancel</button>
+
+                            <button type="submit" style="padding: 8px 16px; background-color: #0066cc; border: 1px solid #0055aa; border-radius: 4px; color: white; font-size: 14px; cursor: pointer; font-weight: bold;">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}
+
+</body>
+</html>
